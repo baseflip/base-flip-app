@@ -1,4 +1,4 @@
-import { ethers } from "hardhat";
+import { ethers, deployments } from "hardhat";
 import { expect } from "chai";
 import { Contract } from "ethers";
 
@@ -12,9 +12,14 @@ describe("BaseFlip", function () {
   beforeEach(async function () {
     [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
 
-    const BaseFlipFactory = await ethers.getContractFactory("BaseFlip");
-    BaseFlip = await BaseFlipFactory.deploy();
-    await BaseFlip.deployed();
+    // Reset deployments to a clean state
+    await deployments.fixture(['DeployAll']);
+
+    // Get the deployment information for BaseFlip
+    const BaseFlipDeployment = await deployments.get('BaseFlip');
+
+    // Connect to the deployed contract
+    BaseFlip = await ethers.getContractAt("BaseFlip", BaseFlipDeployment.address);
   });
 
   it("Should start a new game correctly", async function () {
