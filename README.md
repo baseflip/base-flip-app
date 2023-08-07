@@ -1,5 +1,12 @@
-# Base Flip
+Welcome to BaseFlip, a simple dapp that lets you challenge your friends to a degen game of coinflip. Here, you and your friend bet an equal amount of ETH, and the winner takes it all
 
-This is a simple dapp on which you can challenge your friends to a 'game' of coinflip where both of you bet the same amount of ETH and the winner takes it all. Please don't use big amounts because this is a very early version of the dapp and there could be bugs. The dapp is also using a pseudo-random way to determine the winner at this point (will be changed in future versions) which shouldn't be an issue if you're playing with friends since it's not that easy to exploit but in theory it could be done by malicious actors so don't accept big bets from random people.
+#A Word of Caution
+This is an early version of BaseFlip, and while we've done our best to ensure everything runs smoothly, there might still be a few bugs lurking around. We recommend not using large amounts of ETH for this reason.
+
+#Fair Play
+Currently, we're using a pseudo-random method to determine the winner. While it's not easy to exploit, it's theoretically possible for someone with malicious intent to do so. So, we advise you to stick to playing with friends and avoid accepting large bets from strangers.
+
+#Future Plans
+We're constantly working to improve BaseFlip. In future versions, we plan to implement a more secure method for determining the winner as well as more features. Stay tuned for updates.
 
 https://twitter.com/baseflip
