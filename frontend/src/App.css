@@ -1,0 +1,90 @@
+body, h1, h2, h3, p {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Arial', sans-serif; 
+    font-size: 16px; 
+    line-height: 1.5; 
+}
+
+/* Main App container */
+.App {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 5px 20px;
+    box-sizing: border-box;
+}
+
+/* Typography */
+h1 {
+    font-size: 2rem;
+}
+
+h2 {
+    font-size: 1.75rem;
+}
+
+h3 {
+    font-size: 1.5rem;
+}
+
+p {
+    font-size: 1rem;
+}
+
+/* Images & Media */
+img, video, iframe {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Breakpoints for responsiveness */
+
+/* Tablet devices */
+@media (min-width: 768px) {
+    .App {
+        padding: 10px 40px;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+    }
+
+    h2 {
+        font-size: 2.25rem;
+    }
+
+    h3 {
+        font-size: 2rem;
+    }
+
+    p {
+        font-size: 1.125rem;
+    }
+}
+
+/* Desktop devices */
+@media (min-width: 1024px) {
+    .App {
+        padding: 15px 60px;
+    }
+
+    h1 {
+        font-size: 3rem;
+    }
+
+    h2 {
+        font-size: 2.75rem;
+    }
+
+    h3 {
+        font-size: 2.5rem;
+    }
+
+    p {
+        font-size: 1.25rem;
+    }
+}
+  
