@@ -75,3 +75,28 @@ button:hover {
 .info-icon:hover .tooltip {
   display: block;
 }
+
+.withdraw-section {
+  position: relative;
+  display: inline-block; /* Makes the container as wide as its content */
+}
+
+.tooltip-withdraw {
+  display: none;
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px;
+  width: 300px; /* Adjust width as needed */
+  background-color: #333;
+  color: #fff;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  z-index: 1;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.withdraw-section:hover .tooltip-withdraw {
+  display: block;
+}

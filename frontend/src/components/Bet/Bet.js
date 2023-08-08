@@ -4,6 +4,7 @@ import './Bet.css';
 function Bet() {
   const [betAmount, setBetAmount] = useState('');
   const [generatedLink, setGeneratedLink] = useState('');
+  const [canWithdraw, setCanWithdraw] = useState(false); // New state
 
   const handleDeposit = () => {
     // Logic to initiate web3 transaction goes here
@@ -30,6 +31,20 @@ function Bet() {
           placeholder="Bet amount" 
         />
         <button onClick={handleDeposit}>Deposit</button>
+        <div className="withdraw-section">
+          <button 
+            onClick={() => {/* Withdraw logic here */}} 
+            disabled={!canWithdraw}
+            style={{ backgroundColor: canWithdraw ? '#4CAF50' : 'gray' }}
+          >
+            Withdraw
+          </button>
+          {!canWithdraw && (
+            <div className="tooltip-withdraw">
+              You can withdraw only once the bet has expired without the other user accepting, which takes 15 minutes.
+            </div>
+          )}
+        </div>
       </div>
       {generatedLink && <input type="text" readOnly value={generatedLink} />}
     </div>
