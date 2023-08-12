@@ -1,15 +1,21 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Bet.css';
 
 function Bet() {
   const [betAmount, setBetAmount] = useState('');
   const [generatedLink, setGeneratedLink] = useState('');
-  const [canWithdraw, setCanWithdraw] = useState(false); // New state
+  const [canWithdraw, setCanWithdraw] = useState(false);
+  const navigate = useNavigate();
+
+  // This is just a mock function to represent the event where Player 2 accepts the bet.
+  const onBetAcceptedByPlayer2 = (gameId) => {
+    navigate(`/game-result/${gameId}`);
+  };
 
   const handleDeposit = () => {
     // Logic to initiate web3 transaction goes here
 
-    // For now, we'll generate a placeholder link
     const link = "http://yourapp.com/room/" + Date.now();
     setGeneratedLink(link);
   };

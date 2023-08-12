@@ -1,0 +1,81 @@
+.coin-flip-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50vh;
+    background-color: #f4f4f4;
+    font-family: Arial, sans-serif;
+}
+
+.coin-container {
+    width: 150px; /* increased from 100px */
+    height: 150px; /* increased from 100px */
+    perspective: 1000px;
+    position: relative;
+    cursor: pointer;
+}
+
+.coin {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: linear-gradient(90deg, #007BFF, #33C3F0, #007BFF); /* blue gradient */
+    position: relative;
+    transition: transform 1.5s;
+    will-change: transform;
+}
+
+.side {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    backface-visibility: hidden;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem; /* increased from 1.5rem */
+    border: 2px solid #333;
+}
+
+.front {
+    background-color: #f7d26e;
+}
+
+.back {
+    background-color: #f3c653;
+    transform: rotateY(180deg);
+}
+
+.coin-container.flipped .coin {
+    transform: rotateY(180deg);
+}
+
+.coin-movement {
+    display: inline-block;
+    animation: flipInAir 1.5s; /* Apply the flipInAir animation to the new container */
+}
+
+.winner-announcement {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 20px 40px;
+    border-radius: 10px;
+    font-size: 1.5rem;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: transform 0.5s, opacity 0.5s;
+}
+
+@keyframes flipInAir {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+    }
+    50% {
+        transform: translateY(-100px) scale(1.5);
+    }
+}

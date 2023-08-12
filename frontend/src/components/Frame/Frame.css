@@ -1,7 +1,7 @@
 .frame {
     max-width: 800px;
     margin: 0 auto;
-    padding: 80px 20px 20px 20px; /* Increased top padding */
-    border: none; /* Removed the border */
-    box-sizing: border-box; /* Ensure padding doesn't add to the width */
+    padding: 80px 20px 20px 20px; 
+    border: none; 
+    box-sizing: border-box; 
 }

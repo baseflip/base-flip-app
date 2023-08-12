@@ -1,38 +1,38 @@
 .bet-container {
-  width: 600px; /* Increased width */
-  padding: 40px; /* Increased padding */
+  width: 600px;
+  padding: 40px;
   display: flex;
   margin: 0 auto;
   flex-direction: column;
   align-items: center;
-  gap: 15px; /* Increased gap for more spacing between elements */
+  gap: 15px;
   border: 1px solid #e0e0e0;
   border-radius: 14px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 h2 {
-  font-size: 1.25rem; /* Increased font size */
+  font-size: 1.25rem;
   
-  margin: 0; /* Reset default margins */
+  margin: 0;
 }
 
 .bet-input-section {
   display: flex;
-  gap: 15px; /* Increased gap for more spacing between input and button */
-  margin-bottom: 25px; /* Increased margin for more spacing */
+  gap: 15px;
+  margin-bottom: 25px;
 }
 
 input {
-  padding: 8px 12px; /* Increased padding */
-  font-size: 1.1rem; /* Increased font size */
+  padding: 8px 12px;
+  font-size: 1.1rem;
   border: 1px solid #e0e0e0;
   border-radius: 4px;
 }
 
 button {
-  padding: 8px 12px; /* Increased padding */
-  font-size: 1.1rem; /* Increased font size */
+  padding: 8px 12px;
+  font-size: 1.1rem;
   background-color: #4CAF50;
   color: white;
   border: none;
@@ -46,9 +46,9 @@ button:hover {
 
 .heading-section {
   display: flex;
-  align-items: center; /* This ensures vertical alignment of flex items */
+  align-items: center;
   gap: 10px;
-  margin-bottom: 25px; /* Increased margin for more spacing */
+  margin-bottom: 25px;
 }
 
 .info-icon {
@@ -78,7 +78,7 @@ button:hover {
 
 .withdraw-section {
   position: relative;
-  display: inline-block; /* Makes the container as wide as its content */
+  display: inline-block;
 }
 
 .tooltip-withdraw {
@@ -88,7 +88,7 @@ button:hover {
   left: 50%;
   transform: translateX(-50%);
   padding: 10px;
-  width: 300px; /* Adjust width as needed */
+  width: 300px;
   background-color: #333;
   color: #fff;
   border-radius: 4px;
