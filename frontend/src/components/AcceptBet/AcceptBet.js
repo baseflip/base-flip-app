@@ -3,12 +3,14 @@ import { useParams } from 'react-router-dom';
 import { ethers, JsonRpcProvider, Contract } from 'ethers';
 import abiData from '../../abi.json';
 import EthereumContext from '../../EthereumContext';
+import { useWalletConnection } from '../../hooks/useWalletConnection';
 
 const CONTRACT_ADDRESS = "0x70751cF31d8f31d6622760D243F5E4e150efb20b";
 const RPC_URL = "https://goerli.base.org";
 
 function AcceptBet() {
-  const { signer } = useContext(EthereumContext);
+  const { account, setAccount, setSigner } = useContext(EthereumContext);
+  const { connectWallet } = useWalletConnection(setAccount, setSigner);
   const [gameDetails, setGameDetails] = useState(null);
   const [betExpired, setBetExpired] = useState(false);
 
@@ -58,7 +60,13 @@ function AcceptBet() {
           <h2>Accept Bet</h2>
           <p>Bet Amount: {gameDetails.betAmount} ETH</p>
           <p>Player 1 Address: {gameDetails.player1}</p>
-          <button onClick={handleJoinGame}>Join Game</button>
+          {account ? (
+            <button onClick={handleJoinGame}>Join Game</button>
+          ) : (
+            <button className="placeholder-button" onClick={connectWallet}>
+              Connect Wallet
+            </button>
+          )}
         </>
       ) : (
         <p>Loading game details...</p>
