@@ -1,20 +1,23 @@
-import React, { useState, useEffect, useContext, useMemo } from 'react';
-import { ethers } from 'ethers';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { Contract } from 'ethers';
+import { ethers, JsonRpcProvider, Contract } from 'ethers';
 import abiData from '../../abi.json';
-import EthereumContext from '../../EthereumContext';
 
 const CONTRACT_ADDRESS = "0x70751cF31d8f31d6622760D243F5E4e150efb20b";
+const RPC_URL = "https://goerli.base.org";
 
 function AcceptBet() {
   const [gameDetails, setGameDetails] = useState(null);
-  const { signer } = useContext(EthereumContext);
 
-  // create contractInstance only when signer changes
+  // Create a provider instance to connect to a custom Ethereum node
+  const provider = useMemo(() => {
+    return new JsonRpcProvider(RPC_URL);
+  }, []);
+
+  // Create a contract instance using the public provider
   const contractInstance = useMemo(() => {
-    return new Contract(CONTRACT_ADDRESS, abiData.abi, signer);
-  }, [signer]);
+    return new Contract(CONTRACT_ADDRESS, abiData.abi, provider);
+  }, [provider]);
 
   const { gameId } = useParams();
 
