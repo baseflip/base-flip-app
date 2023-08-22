@@ -1,131 +1,114 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { Contract } from 'ethers';
-import { parseEther } from 'ethers/utils';
-import abiData from '../../abi.json';
+import React, { useState, useEffect, useContext } from 'react';
+import './Header.css';
+import { BrowserProvider } from 'ethers';
 import EthereumContext from '../../EthereumContext';
-import './Bet.css';
 
-const CONTRACT_ADDRESS = "0x70751cF31d8f31d6622760D243F5E4e150efb20b";
+function Header() {
+  const [error, setError] = useState(null); 
+  const { account, signer, setAccount, setSigner } = useContext(EthereumContext);
 
-function Bet() {
-  const [betAmount, setBetAmount] = useState('');
-  const [generatedLink, setGeneratedLink] = useState('');
-  const [canWithdraw, setCanWithdraw] = useState(false);
-  const [withdrawTimeout, setWithdrawTimeout] = useState(null);
-  const [transactionStatus, setTransactionStatus] = useState('');  // New state variable
+  const BASE_GOERLI_CHAIN_ID = '0x14a33';
 
-  // Use EthereumContext to get account and signer
-  const { account, signer } = useContext(EthereumContext);
-  console.log("Signer in Bet.js:", signer);
-  console.log("Account in Bet.js:", account);
-
-  // Create a contract instance using the signer from the context
-  const contractInstance = new Contract(CONTRACT_ADDRESS, abiData.abi, signer);
-
-  const handleDeposit = async () => {
-    try {
-      setTransactionStatus('pending');  // Set status to pending when transaction is sent
-
-      // Convert the betAmount to the correct unit
-      const amount = parseEther(betAmount);
-
-      // Send the transaction to start the game
-      const tx = await contractInstance.startGame(amount, {
-          value: amount  // Send ether with the transaction
+  useEffect(() => {
+    if (typeof window.ethereum !== 'undefined') {
+      // Event listener for network changes
+      window.ethereum.on('chainChanged', async (chainId) => {
+        if (chainId !== BASE_GOERLI_CHAIN_ID) {
+          setError('Please connect to the Base Goerli testnet in your wallet.');
+        } else {
+          setError(null);
+        }
       });
 
-      // Wait for the transaction to be mined
-      const receipt = await tx.wait();
-
-      // Parse the log to retrieve the gameId
-      if (receipt.logs && receipt.logs.length > 0) {
-          const parsedLog = contractInstance.interface.parseLog(receipt.logs[0]);
-          const gameId = parsedLog.args[0];  // Assuming gameId is the first argument in the event
-          console.log("Game ID:", gameId.toString());
-
-          const link = "http://yourapp.com/room/" + gameId.toString();
-          setGeneratedLink(link);
-      } else {
-          console.error("Failed to retrieve gameId from the transaction receipt.");
-      }
-
-      setTransactionStatus('confirmed');  // Set status to confirmed once transaction is mined
-
-      // Set a timeout to enable the withdraw button after 1 minute
-      const timeoutId = setTimeout(() => {
-          setCanWithdraw(true);
-      }, 60000);  // 60000 milliseconds = 1 minute
-
-      // Store the timeout ID in state
-      setWithdrawTimeout(timeoutId);
-
-    } catch (error) {
-        console.error("Error depositing:", error);
-        setTransactionStatus('error');  // Set status to error if there's an exception
+      // Event listener for account changes
+      window.ethereum.on('accountsChanged', (accounts) => {
+        if (accounts.length === 0) {
+          // MetaMask is locked or the user has not connected any accounts
+          setError('Please connect to MetaMask.');
+          setAccount(null);
+        } else {
+          // Set the new account
+          setAccount(accounts[0]);
+        }
+      });
     }
-  };
 
-  const handleWithdraw = async () => {
-    try {
-      const tx = await contractInstance.withdraw();
-      await tx.wait();
-      setCanWithdraw(false);
-    } catch (error) {
-      console.error("Error withdrawing:", error);
-    }
-  };
-
-  // Clear the timeout if the component is unmounted
-  useEffect(() => {
+    // Cleanup the event listeners on component unmount
     return () => {
-      if (withdrawTimeout) {
-        clearTimeout(withdrawTimeout);
+      if (typeof window.ethereum !== 'undefined') {
+        window.ethereum.removeAllListeners('chainChanged');
+        window.ethereum.removeAllListeners('accountsChanged');
       }
     };
-  }, [withdrawTimeout]);
+  }, []);
+
+  const connectWallet = async () => {
+    try {
+      if (typeof window.ethereum !== 'undefined') {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const account = accounts[0];
+        setAccount(account);
+  
+        const browserProvider = new BrowserProvider(window.ethereum);
+        const signerInstance = browserProvider.getSigner(0);
+        console.log("Signer in Header.js:", signerInstance);
+        console.log("Account in Header.js:", account);
+  
+        // Resolve the signer and then set it in the context
+        const resolvedSigner = await signerInstance;
+        setSigner(resolvedSigner);
+  
+        const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+        if (chainId !== BASE_GOERLI_CHAIN_ID) {
+          setError('Please connect to the Base Goerli testnet in your wallet.');
+          return;
+        }
+      } else {
+        setError('Ethereum provider not detected. Please install MetaMask.');
+      }
+    } catch (error) {
+      setError('Failed to connect wallet. Please try again.');
+    }
+  };
+  
+
+  // Function to handle wallet disconnection
+  const disconnectWallet = () => {
+    setAccount(null);
+    setError(null);
+    window.location.reload();
+  };
+
+  // Function to shorten the displayed address
+  const shortenAddress = (address) => {
+    if (!address) return "";
+    return address.slice(0, 6) + "..." + address.slice(-4);
+  };
 
   return (
-    <div className="bet-container">
-      {transactionStatus !== 'confirmed' ? (
-        <>
-          <div className="heading-section">
-            <h2>Create a new bet and share it</h2>
-            <div className="info-icon">
-              ⓘ
-              <div className="tooltip">Enter the desired bet size in the field below and click on deposit. After you've deposited your ETH, a link will be generated which you can share with your counterparty.</div>
-            </div>
-          </div>
-          <div className="bet-input-section">
-            <label>Enter desired amount of ETH to bet:</label>
-            <input 
-              type="number" 
-              value={betAmount} 
-              onChange={(e) => setBetAmount(e.target.value)} 
-              placeholder="Bet amount" 
-            />
-            <button onClick={handleDeposit}>Deposit</button>
-          </div>
-          {transactionStatus === 'pending' && <p>Awaiting transaction confirmation...</p>}
-        </>
-      ) : (
-        <>
-          <div className="bet-output-section">
-            <p>You've deposited: {betAmount} ETH</p>
-            <button 
-              onClick={handleWithdraw} 
-              disabled={!canWithdraw}
-              style={{ backgroundColor: canWithdraw ? '#4CAF50' : 'gray' }}
-            >
-              Withdraw
+    <header className="header">
+      <div className="logo-section">
+        {/* Placeholder */}
+        <div className="placeholder-logo"></div>
+        <h1>BaseFlip</h1>
+      </div>
+      <div className="button-section">
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+        {account ? (
+          <>
+            <p>Connected: {shortenAddress(account)}</p>
+            <button className="placeholder-button" onClick={disconnectWallet}>
+              Disconnect Wallet
             </button>
-          </div>
-          <div className="link-section">
-            <input type="text" readOnly value={generatedLink} />
-          </div>
-        </>
-      )}
-    </div>
+          </>
+        ) : (
+          <button className="placeholder-button" onClick={connectWallet}>
+            Connect Wallet
+          </button>
+        )}
+      </div>
+    </header>
   );
 }
 
-export default Bet;
+export default Header;

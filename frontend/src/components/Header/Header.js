@@ -4,14 +4,26 @@ import { BrowserProvider } from 'ethers';
 import EthereumContext from '../../EthereumContext';
 
 function Header() {
-  const [error, setError] = useState(null); 
-  const { account, signer, setAccount, setSigner } = useContext(EthereumContext);
+  const [error, setError] = useState(null);
+  const { account, setAccount, setSigner } = useContext(EthereumContext);
 
   const BASE_GOERLI_CHAIN_ID = '0x14a33';
 
   useEffect(() => {
+    const connectWalletFromLocalStorage = async () => {
+      const connectedAddress = localStorage.getItem('connectedAddress');
+      if (connectedAddress) {
+        setAccount(connectedAddress);
+        const browserProvider = new BrowserProvider(window.ethereum);
+        const signerInstance = browserProvider.getSigner(0);
+        const resolvedSigner = await signerInstance;
+        setSigner(resolvedSigner);
+      }
+    };
+
+    connectWalletFromLocalStorage();
+
     if (typeof window.ethereum !== 'undefined') {
-      // Event listener for network changes
       window.ethereum.on('chainChanged', async (chainId) => {
         if (chainId !== BASE_GOERLI_CHAIN_ID) {
           setError('Please connect to the Base Goerli testnet in your wallet.');
@@ -20,27 +32,25 @@ function Header() {
         }
       });
 
-      // Event listener for account changes
       window.ethereum.on('accountsChanged', (accounts) => {
         if (accounts.length === 0) {
-          // MetaMask is locked or the user has not connected any accounts
           setError('Please connect to MetaMask.');
           setAccount(null);
+          localStorage.removeItem('connectedAddress');
         } else {
-          // Set the new account
           setAccount(accounts[0]);
+          localStorage.setItem('connectedAddress', accounts[0]);
         }
       });
     }
 
-    // Cleanup the event listeners on component unmount
     return () => {
       if (typeof window.ethereum !== 'undefined') {
         window.ethereum.removeAllListeners('chainChanged');
         window.ethereum.removeAllListeners('accountsChanged');
       }
     };
-  }, []);
+  }, [setAccount, setSigner]);
 
   const connectWallet = async () => {
     try {
@@ -48,16 +58,13 @@ function Header() {
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         const account = accounts[0];
         setAccount(account);
-  
+        localStorage.setItem('connectedAddress', account);
+
         const browserProvider = new BrowserProvider(window.ethereum);
         const signerInstance = browserProvider.getSigner(0);
-        console.log("Signer in Header.js:", signerInstance);
-        console.log("Account in Header.js:", account);
-  
-        // Resolve the signer and then set it in the context
         const resolvedSigner = await signerInstance;
         setSigner(resolvedSigner);
-  
+
         const chainId = await window.ethereum.request({ method: 'eth_chainId' });
         if (chainId !== BASE_GOERLI_CHAIN_ID) {
           setError('Please connect to the Base Goerli testnet in your wallet.');
@@ -70,16 +77,14 @@ function Header() {
       setError('Failed to connect wallet. Please try again.');
     }
   };
-  
 
-  // Function to handle wallet disconnection
   const disconnectWallet = () => {
     setAccount(null);
     setError(null);
+    localStorage.removeItem('connectedAddress');
     window.location.reload();
   };
 
-  // Function to shorten the displayed address
   const shortenAddress = (address) => {
     if (!address) return "";
     return address.slice(0, 6) + "..." + address.slice(-4);

@@ -1,26 +1,52 @@
-import React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import './AcceptBet.css';
+import React, { useState, useEffect, useContext, useMemo } from 'react';
+import { ethers } from 'ethers';
+import { useParams } from 'react-router-dom';
+import { Contract } from 'ethers';
+import abiData from '../../abi.json';
+import EthereumContext from '../../EthereumContext';
+
+const CONTRACT_ADDRESS = "0x70751cF31d8f31d6622760D243F5E4e150efb20b";
 
 function AcceptBet() {
-  const { id: gameId } = useParams();
-  const betAmount = "0.1";
-  const offererAddress = "0x1234...abcd";
-  const navigate = useNavigate();
+  const [gameDetails, setGameDetails] = useState(null);
+  const { signer } = useContext(EthereumContext);
 
-  const handleAccept = () => {
-      // logic for accepting the bet
+  // create contractInstance only when signer changes
+  const contractInstance = useMemo(() => {
+    return new Contract(CONTRACT_ADDRESS, abiData.abi, signer);
+  }, [signer]);
 
-      // Once the bet is accepted, navigate to the GameResult route
-      navigate(`/game-result/${gameId}`);
+  const { gameId } = useParams();
+
+  useEffect(() => {
+    const fetchGameDetails = async () => {
+      const game = await contractInstance.games(gameId);
+      const betAmountInEther = ethers.formatEther(game.betAmount);
+      setGameDetails({
+        player1: game.player1,
+        betAmount: betAmountInEther
+      });
+    };
+
+    fetchGameDetails();
+  }, [gameId, contractInstance]);
+
+  const handleJoinGame = async () => {
+    // Logic to join the game
   };
 
   return (
-    <div className="acceptbet-container">
-      <div className="acceptbet-heading">Accept Bet</div>
-      <p className="acceptbet-info">You've been offered a bet by address: {offererAddress}</p>
-      <p className="acceptbet-amount">Bet Amount: {betAmount} ETH</p>
-      <button className="acceptbet-button" onClick={handleAccept}>Accept</button>
+    <div>
+      {gameDetails ? (
+        <>
+          <h2>Accept Bet</h2>
+          <p>Bet Amount: {gameDetails.betAmount} ETH</p>
+          <p>Player 1 Address: {gameDetails.player1}</p>
+          <button onClick={handleJoinGame}>Join Game</button>
+        </>
+      ) : (
+        <p>Loading game details...</p>
+      )}
     </div>
   );
 }

@@ -19,6 +19,7 @@ function Bet() {
   const { signer } = useContext(EthereumContext);
 
   const contractInstance = new Contract(CONTRACT_ADDRESS, abiData.abi, signer);
+  
 
   const handleDeposit = async () => {
     try {

@@ -20,8 +20,8 @@ function App() {
           <Frame>
             <Routes>
               <Route path="/" element={<Bet />} />
-              <Route path="/room/:id" element={<AcceptBet />} />
-              <Route path="/game-result/:id" element={<GameResult />} />
+              <Route path="/room/:gameId" element={<AcceptBet />} />
+              <Route path="/game-result/:gameId" element={<GameResult />} />
             </Routes>
           </Frame>
         </EthereumContext.Provider>
