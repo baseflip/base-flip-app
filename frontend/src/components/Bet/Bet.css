@@ -13,14 +13,22 @@
 
 h2 {
   font-size: 1.25rem;
-  
   margin: 0;
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 600;
 }
 
 .bet-input-section {
   display: flex;
+  flex-direction: column;
   gap: 15px;
-  margin-bottom: 25px;
+  width: 100%;
+  align-items: center;
 }
 
 input {
@@ -28,6 +36,7 @@ input {
   font-size: 1.1rem;
   border: 1px solid #e0e0e0;
   border-radius: 4px;
+  width: 100%;
 }
 
 button {
@@ -49,6 +58,7 @@ button:hover {
   align-items: center;
   gap: 10px;
   margin-bottom: 25px;
+  width: 100%;
 }
 
 .info-icon {
@@ -78,7 +88,55 @@ button:hover {
 
 .withdraw-section {
   position: relative;
-  display: inline-block;
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  margin-top: 20px;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.tooltip-withdraw {
+  display: none;
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px;
+  width: 300px;
+  background-color: #333;
+  color: #fff;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  z-index: 1;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.withdraw-section:hover .tooltip-withdraw {
+  display: block;
+}
+
+.link-section {
+  margin-top: 20px;
+  width: 100%;
+}
+
+.link-section input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #4CAF50;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.link-section-title {
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.bet-output-section {
+  margin-top: 30px;
 }
 
 .tooltip-withdraw {

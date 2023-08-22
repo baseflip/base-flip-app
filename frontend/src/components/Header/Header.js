@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import './Header.css';
+import { BrowserProvider } from 'ethers';
+import EthereumContext from '../../EthereumContext';
 
 function Header() {
-  const [account, setAccount] = useState(null); // State to store the connected account
-  const [error, setError] = useState(null); // State to store any errors
+  const [error, setError] = useState(null); 
+  const { account, signer, setAccount, setSigner } = useContext(EthereumContext);
 
-  const BASE_GOERLI_CHAIN_ID = '0x14a33'; // Chain ID for Base Goerli
+  const BASE_GOERLI_CHAIN_ID = '0x14a33';
 
   useEffect(() => {
     if (typeof window.ethereum !== 'undefined') {
@@ -40,14 +42,22 @@ function Header() {
     };
   }, []);
 
-  // Function to handle wallet connection
   const connectWallet = async () => {
     try {
       if (typeof window.ethereum !== 'undefined') {
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         const account = accounts[0];
         setAccount(account);
-
+  
+        const browserProvider = new BrowserProvider(window.ethereum);
+        const signerInstance = browserProvider.getSigner(0);
+        console.log("Signer in Header.js:", signerInstance);
+        console.log("Account in Header.js:", account);
+  
+        // Resolve the signer and then set it in the context
+        const resolvedSigner = await signerInstance;
+        setSigner(resolvedSigner);
+  
         const chainId = await window.ethereum.request({ method: 'eth_chainId' });
         if (chainId !== BASE_GOERLI_CHAIN_ID) {
           setError('Please connect to the Base Goerli testnet in your wallet.');
@@ -60,6 +70,7 @@ function Header() {
       setError('Failed to connect wallet. Please try again.');
     }
   };
+  
 
   // Function to handle wallet disconnection
   const disconnectWallet = () => {

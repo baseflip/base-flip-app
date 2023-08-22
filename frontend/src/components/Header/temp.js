@@ -12,61 +12,70 @@ function Bet() {
   const [generatedLink, setGeneratedLink] = useState('');
   const [canWithdraw, setCanWithdraw] = useState(false);
   const [withdrawTimeout, setWithdrawTimeout] = useState(null);
-  const [transactionStatus, setTransactionStatus] = useState('');
-  const [gameId, setGameId] = useState(null);
-  const [withdrawn, setWithdrawn] = useState(false);
+  const [transactionStatus, setTransactionStatus] = useState('');  // New state variable
 
-  const { signer } = useContext(EthereumContext);
+  // Use EthereumContext to get account and signer
+  const { account, signer } = useContext(EthereumContext);
+  console.log("Signer in Bet.js:", signer);
+  console.log("Account in Bet.js:", account);
 
+  // Create a contract instance using the signer from the context
   const contractInstance = new Contract(CONTRACT_ADDRESS, abiData.abi, signer);
 
   const handleDeposit = async () => {
     try {
-      setTransactionStatus('pending');
+      setTransactionStatus('pending');  // Set status to pending when transaction is sent
 
+      // Convert the betAmount to the correct unit
       const amount = parseEther(betAmount);
-      const tx = await contractInstance.startGame(amount, { value: amount });
+
+      // Send the transaction to start the game
+      const tx = await contractInstance.startGame(amount, {
+          value: amount  // Send ether with the transaction
+      });
+
+      // Wait for the transaction to be mined
       const receipt = await tx.wait();
 
+      // Parse the log to retrieve the gameId
       if (receipt.logs && receipt.logs.length > 0) {
           const parsedLog = contractInstance.interface.parseLog(receipt.logs[0]);
-          const gameId = parsedLog.args[0];
+          const gameId = parsedLog.args[0];  // Assuming gameId is the first argument in the event
+          console.log("Game ID:", gameId.toString());
+
           const link = "http://yourapp.com/room/" + gameId.toString();
           setGeneratedLink(link);
-          setGameId(gameId);
       } else {
           console.error("Failed to retrieve gameId from the transaction receipt.");
       }
 
-      setTransactionStatus('confirmed');
+      setTransactionStatus('confirmed');  // Set status to confirmed once transaction is mined
 
+      // Set a timeout to enable the withdraw button after 1 minute
       const timeoutId = setTimeout(() => {
-        setCanWithdraw(true);
-      }, 900000);
+          setCanWithdraw(true);
+      }, 60000);  // 60000 milliseconds = 1 minute
 
+      // Store the timeout ID in state
       setWithdrawTimeout(timeoutId);
 
     } catch (error) {
         console.error("Error depositing:", error);
-        setTransactionStatus('error');
+        setTransactionStatus('error');  // Set status to error if there's an exception
     }
   };
 
   const handleWithdraw = async () => {
     try {
-      // First, check if the game has timed out and update the game state if necessary
-      await contractInstance.checkGameTimeout(gameId);
-  
-      // Then proceed with the withdrawal
       const tx = await contractInstance.withdraw();
       await tx.wait();
       setCanWithdraw(false);
-      setWithdrawn(true);
     } catch (error) {
       console.error("Error withdrawing:", error);
     }
   };
 
+  // Clear the timeout if the component is unmounted
   useEffect(() => {
     return () => {
       if (withdrawTimeout) {
@@ -100,32 +109,18 @@ function Bet() {
         </>
       ) : (
         <>
-          <h2>Share the room link with someone</h2>
-          
+          <div className="bet-output-section">
+            <p>You've deposited: {betAmount} ETH</p>
+            <button 
+              onClick={handleWithdraw} 
+              disabled={!canWithdraw}
+              style={{ backgroundColor: canWithdraw ? '#4CAF50' : 'gray' }}
+            >
+              Withdraw
+            </button>
+          </div>
           <div className="link-section">
             <input type="text" readOnly value={generatedLink} />
-          </div>
-
-          <div className="bet-output-section">
-            <p>
-              {withdrawn ? "Deposit withdrawn" : `You've deposited: ${betAmount} ETH`}
-            </p>
-            <div className="withdraw-section">
-              <button
-                onClick={handleWithdraw}
-                disabled={!canWithdraw || withdrawn} // Disable the button if already withdrawn
-                style={{
-                  backgroundColor: canWithdraw && !withdrawn ? '#4CAF50' : 'gray'
-                }}
-              >
-                Withdraw
-              </button>
-              {!canWithdraw && !withdrawn && (
-                <div className="tooltip-withdraw">
-                  You can withdraw only once the bet has expired without the other user accepting, which takes 15 minutes.
-                </div>
-              )}
-            </div>
           </div>
         </>
       )}

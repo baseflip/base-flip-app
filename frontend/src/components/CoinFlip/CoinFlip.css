@@ -8,8 +8,8 @@
 }
 
 .coin-container {
-    width: 150px; /* increased from 100px */
-    height: 150px; /* increased from 100px */
+    width: 150px; 
+    height: 150px;
     perspective: 1000px;
     position: relative;
     cursor: pointer;
@@ -19,7 +19,7 @@
     width: 150px;
     height: 150px;
     border-radius: 50%;
-    background: linear-gradient(90deg, #007BFF, #33C3F0, #007BFF); /* blue gradient */
+    background: linear-gradient(90deg, #007BFF, #33C3F0, #007BFF);
     position: relative;
     transition: transform 1.5s;
     will-change: transform;
@@ -34,7 +34,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2rem; /* increased from 1.5rem */
+    font-size: 2rem; 
     border: 2px solid #333;
 }
 
@@ -53,7 +53,7 @@
 
 .coin-movement {
     display: inline-block;
-    animation: flipInAir 1.5s; /* Apply the flipInAir animation to the new container */
+    animation: flipInAir 1.5s;
 }
 
 .winner-announcement {

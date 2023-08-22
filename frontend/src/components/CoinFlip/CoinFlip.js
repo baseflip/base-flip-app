@@ -16,14 +16,12 @@ function CoinFlip() {
         const coinElement = coinContainer.querySelector('.coin');
         coinElement.style.transform = `rotateY(${degrees}deg)`;
 
-        // Restart the flipInAir animation for the coin-movement container
         coinMovement.style.animation = 'none';
         setTimeout(() => {
             coinMovement.style.animation = '';
         }, 10);
     };
-
-    // Use the useEffect hook to trigger the handleFlip function when the component mounts
+   
     useEffect(() => {
         handleFlip();
     }, []);

@@ -40,7 +40,6 @@ img, video, iframe {
     height: auto;
 }
 
-/* Breakpoints for responsiveness */
 
 /* Tablet devices */
 @media (min-width: 768px) {
