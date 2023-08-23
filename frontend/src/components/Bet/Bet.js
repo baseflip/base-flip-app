@@ -1,5 +1,6 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { Contract } from 'ethers';
+import React, { useState, useContext, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Contract, WebSocketProvider } from 'ethers';
 import { parseEther } from 'ethers/utils';
 import abiData from '../../abi.json';
 import EthereumContext from '../../EthereumContext';
@@ -15,10 +16,38 @@ function Bet() {
   const [transactionStatus, setTransactionStatus] = useState('');
   const [gameId, setGameId] = useState(null);
   const [withdrawn, setWithdrawn] = useState(false);
-
   const { signer } = useContext(EthereumContext);
+  const navigate = useNavigate();
+
+  // Create a provider instance to connect to a custom Ethereum node
+  const provider = useMemo(() => {
+    return new WebSocketProvider(
+    `wss://delicate-crimson-dew.base-goerli.discover.quiknode.pro/3e739828ff34548682516310c83e2dbbb604b2b8/`
+  );
+  }, []);
+  
+  // Create a contract instance using the public provider
+  const contractInstanceProvider = useMemo(() => {
+    return new Contract(CONTRACT_ADDRESS, abiData.abi, provider);
+  }, [provider]);
 
   const contractInstance = new Contract(CONTRACT_ADDRESS, abiData.abi, signer);
+  
+  useEffect(() => {
+    // Listen to the "CoinFlipped" event
+    const onCoinFlipped = (gameIdEvent, winner) => {
+      console.log("hi from Bet.js");
+      // Redirect to the "gameResult" component with the winner information
+      if(gameIdEvent === gameId) {
+        navigate('/game-result/' + gameId, { state: { winner } });
+      }
+    };
+  
+    contractInstanceProvider.on("CoinFlipped", onCoinFlipped);
+    // return () => {
+    //   contractInstanceProvider.off("CoinFlipped", onCoinFlipped);
+    // };
+  }, [contractInstanceProvider, navigate, gameId]);
   
 
   const handleDeposit = async () => {

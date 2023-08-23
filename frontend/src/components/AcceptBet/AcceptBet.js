@@ -32,13 +32,21 @@ function AcceptBet() {
     return new Contract(CONTRACT_ADDRESS, abiData.abi, signer);
   }, [signer]);
 
-
-  // Listen to the "CoinFlipped" event
-  contractInstance.on("CoinFlipped", (gameId, winner) => {
-    console.log("hi from handleJoinGame");
-    // Redirect to the "gameResult" component with the winner information
-    navigate('/game-result/' + gameId, { state: { winner } });
-  });
+  useEffect(() => {
+    // Listen to the "CoinFlipped" event
+    const onCoinFlipped = (gameIdEvent, winner) => {
+      console.log("hi from AcceptBet.js");
+      // Redirect to the "gameResult" component with the winner information
+      if(Number(gameIdEvent) === Number(gameId)) {
+        navigate('/game-result/' + gameId, { state: { winner } });
+      }
+    };
+  
+    contractInstance.on("CoinFlipped", onCoinFlipped);
+    // return () => {
+    //   contractInstanceProvider.off("CoinFlipped", onCoinFlipped);
+    // };
+  }, [contractInstance, navigate, gameId]);
 
 
   useEffect(() => {
