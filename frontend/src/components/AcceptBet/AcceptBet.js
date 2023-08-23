@@ -61,7 +61,7 @@ function AcceptBet() {
           <p>Bet Amount: {gameDetails.betAmount} ETH</p>
           <p>Player 1 Address: {gameDetails.player1}</p>
           {account ? (
-            <button onClick={handleJoinGame}>Join Game</button>
+            <button onClick={handleJoinGame}>Accept</button>
           ) : (
             <button className="placeholder-button" onClick={connectWallet}>
               Connect Wallet
