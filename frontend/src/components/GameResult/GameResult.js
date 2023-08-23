@@ -5,7 +5,7 @@ import CoinFlip from '../CoinFlip/CoinFlip';
 function GameResult({ player1Address, player2Address, winnerAddress, onCollect }) {
     const { id: gameId } = useParams();
     const isPlayer1Winner = player1Address === winnerAddress;
-
+    
     return (
         <div className="game-result-container">
             <div className="players">

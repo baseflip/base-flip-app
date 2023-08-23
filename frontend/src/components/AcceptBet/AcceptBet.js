@@ -1,30 +1,45 @@
 import React, { useState, useEffect, useMemo, useContext } from 'react';
-import { useParams } from 'react-router-dom';
-import { ethers, JsonRpcProvider, Contract } from 'ethers';
+import { useParams, useNavigate } from 'react-router-dom';
+import { ethers, WebSocketProvider, Contract } from 'ethers';
 import abiData from '../../abi.json';
 import EthereumContext from '../../EthereumContext';
 import { useWalletConnection } from '../../hooks/useWalletConnection';
 
 const CONTRACT_ADDRESS = "0x70751cF31d8f31d6622760D243F5E4e150efb20b";
-const RPC_URL = "https://goerli.base.org";
 
 function AcceptBet() {
-  const { account, setAccount, setSigner } = useContext(EthereumContext);
+  const { account, signer, setAccount, setSigner } = useContext(EthereumContext);
   const { connectWallet } = useWalletConnection(setAccount, setSigner);
   const [gameDetails, setGameDetails] = useState(null);
   const [betExpired, setBetExpired] = useState(false);
+  const { gameId } = useParams();
+  const navigate = useNavigate();
 
   // Create a provider instance to connect to a custom Ethereum node
   const provider = useMemo(() => {
-    return new JsonRpcProvider(RPC_URL);
+    return new WebSocketProvider(
+    `wss://delicate-crimson-dew.base-goerli.discover.quiknode.pro/3e739828ff34548682516310c83e2dbbb604b2b8/`
+  );
   }, []);
-
+  
   // Create a contract instance using the public provider
   const contractInstance = useMemo(() => {
     return new Contract(CONTRACT_ADDRESS, abiData.abi, provider);
   }, [provider]);
 
-  const { gameId } = useParams();
+  // Create a contract instance using the signer
+  const contractInstanceSigner = useMemo(() => {
+    return new Contract(CONTRACT_ADDRESS, abiData.abi, signer);
+  }, [signer]);
+
+
+  // Listen to the "CoinFlipped" event
+  contractInstance.on("CoinFlipped", (gameId, winner) => {
+    console.log("hi from handleJoinGame");
+    // Redirect to the "gameResult" component with the winner information
+    navigate('/game-result/' + gameId, { state: { winner } });
+  });
+
 
   useEffect(() => {
     const fetchGameDetails = async () => {
@@ -40,7 +55,8 @@ function AcceptBet() {
       const betAmountInEther = ethers.formatEther(game.betAmount);
       setGameDetails({
         player1: game.player1,
-        betAmount: betAmountInEther
+        betAmount: betAmountInEther,
+        betAmountRaw: game.betAmount
       });
     };
 
@@ -48,7 +64,13 @@ function AcceptBet() {
   }, [gameId, contractInstance]);
 
   const handleJoinGame = async () => {
-    // Logic to join the game
+    try {
+      // Logic to join the game
+      const tx = await contractInstanceSigner.joinGame(gameId, { value: gameDetails.betAmountRaw });
+      await tx.wait();
+    } catch (error) {
+      console.error("An error occurred while joining the game:", error);
+    }
   };
 
   return (
