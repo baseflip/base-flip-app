@@ -75,7 +75,8 @@ function AcceptBet() {
     try {
       // Logic to join the game
       console.log(gameId, gameDetails.betAmountRaw);
-      const tx = await contractInstanceSigner.joinGame(gameId, { value: gameDetails.betAmountRaw });
+      const gasLimit = 120000;
+      const tx = await contractInstanceSigner.joinGame(gameId, { value: gameDetails.betAmountRaw, gasLimit: gasLimit });
       await tx.wait();
     } catch (error) {
       console.error("An error occurred while joining the game:", error);
