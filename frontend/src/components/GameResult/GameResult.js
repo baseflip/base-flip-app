@@ -74,6 +74,11 @@ function GameResult() {
         }
     };
 
+    const shortenAddress = (address) => {
+        if (!address) return "";
+        return address.slice(0, 6) + "..." + address.slice(-4);
+    };
+
     return (
 
         <div className="game-result-container">
@@ -82,13 +87,13 @@ function GameResult() {
             ) : (
                 <>
             <div className="players">
-                <div className="player">
+                <div className={"player player-1" + (winner === "Player 1 wins!" ? " winner" : " loser")} >
                     <h2>Player 1</h2>
-                    <p>{gameDetails ? gameDetails.player1 : "fetching"}</p>
+                    <p>{gameDetails ? shortenAddress(gameDetails.player1) : "fetching"}</p>
                 </div>
-                <div className="player">
+                <div className={"player player-2" + (winner === "Player 2 wins!" ? " winner" : " loser")} >
                     <h2>Player 2</h2>
-                    <p>{gameDetails ? gameDetails.player2 : "fetching"}</p>
+                    <p>{gameDetails ? shortenAddress(gameDetails.player2) : "fetching"}</p>
                 </div>
             </div>
             

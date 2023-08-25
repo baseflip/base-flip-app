@@ -4,11 +4,13 @@
     align-items: center;
     padding: 1rem 2rem;
     background-color: #f7f7f7;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
 }
 
 .logo-section {
     display: flex;
     align-items: center;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
 }
 
 .placeholder-logo {
@@ -29,6 +31,21 @@
 }
 
 .placeholder-button:hover {
-    background-color: #45a049; 
+    background-color: #45a049;
 }
-  
+
+/* Adjustments for smaller screens */
+@media (max-width: 768px) {
+    .header {
+        padding: 1rem; /* Reduce padding on smaller screens */
+    }
+
+    .logo-section {
+        justify-content: center; /* Center logo section on smaller screens */
+        margin-bottom: 1rem; /* Add margin below logo section on smaller screens */
+    }
+
+    .placeholder-button {
+        padding: 0.5rem 0.8rem; /* Reduce padding on smaller screens */
+    }
+}

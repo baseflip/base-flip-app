@@ -1,18 +1,45 @@
-/* .game-result-container {
+.players {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+}
+
+.player h2 {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+}
+
+.player {
+    background-color: #f4f4f4;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    width: 10vw;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
-} */
+}
 
-/* .players {
-    display: flex;
-    gap: 40px;
-} */
+/* Adjustments for smaller screens */
+@media (max-width: 1400px) {
+    .player {
+        width: 15vw;
+    }
+}
 
-.player h2 {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
+/* Adjustments for smaller screens */
+@media (max-width: 768px) {
+    .player {
+        width: 25vw;
+    }
+}
+
+.winner {
+    color: rgb(33, 184, 33);
+}
+
+.loser {
+    color: rgb(197, 31, 51);
 }
 
 .withdraw-button {
