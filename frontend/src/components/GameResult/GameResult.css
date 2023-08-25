@@ -53,6 +53,15 @@
     cursor: pointer;
 }
 
+.withdraw-button:disabled {
+    background-color: #97a0af;
+}
+
 .withdraw-button:hover {
     background-color: #496db0;
+}
+
+.withdraw-button:disabled:hover {
+    background-color: #97a0af;
+    cursor: default;
 }

@@ -15,6 +15,7 @@ function GameResult() {
     const { signer } = useContext(EthereumContext);
     const { winner, gameId } = location.state;
     const [loading, setLoading] = useState(true);
+    const [withdrawn, setWithdrawn] = useState(false);
 
     // Create a provider instance to connect to a custom Ethereum node
     const provider = useMemo(() => {
@@ -27,6 +28,11 @@ function GameResult() {
     const contractInstance = useMemo(() => {
         return new Contract(CONTRACT_ADDRESS, abiData.abi, provider);
     }, [provider]);
+
+    // Create a contract instance using the signer
+    const contractInstanceSigner = useMemo(() => {
+        return new Contract(CONTRACT_ADDRESS, abiData.abi, signer);
+    }, [signer]);
     
     useEffect(() => {
         if (!signer) {
@@ -68,7 +74,9 @@ function GameResult() {
 
     const handleWithdraw = async () => {
         try {
-
+            const tx = await contractInstanceSigner.withdraw();
+            await tx.wait();
+            setWithdrawn(true);
         } catch (error) {
             console.error("An error occurred while trying to withdraw:", error);
         }
@@ -100,7 +108,9 @@ function GameResult() {
             <CoinFlip winner={ winner } />
 
             {isWinner && (
-                <button className="withdraw-button" onClick={handleWithdraw}>Withdraw</button>
+                <button className="withdraw-button" onClick={handleWithdraw} disabled={withdrawn}>
+                    {withdrawn ? "Withdrawn" : "Withdraw"}
+                </button>
             )}</>) }
         </div>
     );
