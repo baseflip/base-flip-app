@@ -38,7 +38,7 @@ function AcceptBet() {
       console.log("hi from AcceptBet.js");
       // Redirect to the "gameResult" component with the winner information
       if(Number(gameIdEvent) === Number(gameId)) {
-        navigate('/game-result/' + gameId, { state: { winner } });
+        navigate('/game-result/' + gameId, { state: { winner, gameId } });
       }
     };
   
@@ -74,6 +74,7 @@ function AcceptBet() {
   const handleJoinGame = async () => {
     try {
       // Logic to join the game
+      console.log(gameId, gameDetails.betAmountRaw);
       const tx = await contractInstanceSigner.joinGame(gameId, { value: gameDetails.betAmountRaw });
       await tx.wait();
     } catch (error) {
@@ -85,7 +86,7 @@ function AcceptBet() {
     <div>
       {betExpired ? (
         <p>The bet has expired.</p>
-      ) : gameDetails ? (
+      ) : gameDetails && gameId ? (
         <>
           <h2>Accept Bet</h2>
           <p>Bet Amount: {gameDetails.betAmount} ETH</p>

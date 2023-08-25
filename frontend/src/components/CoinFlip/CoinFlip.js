@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import './CoinFlip.css';
 
-function CoinFlip() {
+function CoinFlip({ winner }) {
   const coinContainerRef = useRef(null);
   const coinMovementRef = useRef(null);
 
@@ -49,7 +49,7 @@ function CoinFlip() {
         </div>
       </div>
       <div className="winner-announcement">
-        Player 1 Wins!
+        { winner }
       </div>
     </div>
   );

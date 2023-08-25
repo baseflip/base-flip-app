@@ -39,7 +39,7 @@ function Bet() {
       console.log("hi from Bet.js");
       // Redirect to the "gameResult" component with the winner information
       if(gameIdEvent === gameId) {
-        navigate('/game-result/' + gameId, { state: { winner } });
+        navigate('/game-result/' + gameId, { state: { winner, gameId } });
       }
     };
   

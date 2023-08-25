@@ -8,16 +8,16 @@
 }
 
 .coin-container {
-    width: 150px; 
-    height: 150px;
+    width: 160px; 
+    height: 160px;
     perspective: 1000px;
     position: relative;
     cursor: pointer;
 }
 
 .coin {
-    width: 150px;
-    height: 150px;
+    width: 160px;
+    height: 160px;
     border-radius: 50%;
     background: linear-gradient(90deg, #007BFF, #33C3F0, #007BFF);
     position: relative;

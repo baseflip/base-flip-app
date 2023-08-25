@@ -1,33 +1,102 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useMemo, useEffect, useState, useContext } from 'react';
+import { WebSocketProvider, Contract } from 'ethers';
+import { useLocation } from 'react-router-dom';
+import abiData from '../../abi.json';
 import CoinFlip from '../CoinFlip/CoinFlip';
+import EthereumContext from '../../EthereumContext';
+import './GameResult.css';
 
-function GameResult({ player1Address, player2Address, winnerAddress, onCollect }) {
-    const { id: gameId } = useParams();
-    const isPlayer1Winner = player1Address === winnerAddress;
+const CONTRACT_ADDRESS = "0x70751cF31d8f31d6622760D243F5E4e150efb20b";
+
+function GameResult() {
+    const [isWinner, setIsWinner] = useState(false);
+    const location = useLocation();
+    const [gameDetails, setGameDetails] = useState(null);
+    const { signer } = useContext(EthereumContext);
+    const { winner, gameId } = location.state;
+    const [loading, setLoading] = useState(true);
+
+    // Create a provider instance to connect to a custom Ethereum node
+    const provider = useMemo(() => {
+        return new WebSocketProvider(
+        `wss://delicate-crimson-dew.base-goerli.discover.quiknode.pro/3e739828ff34548682516310c83e2dbbb604b2b8/`
+    );
+    }, []);
     
+    // Create a contract instance using the public provider
+    const contractInstance = useMemo(() => {
+        return new Contract(CONTRACT_ADDRESS, abiData.abi, provider);
+    }, [provider]);
+    
+    useEffect(() => {
+        if (!signer) {
+            setLoading(true); 
+            return;
+        }
+    
+        setLoading(false);
+
+        const fetchGameDetails = async () => {
+            const game = await contractInstance.games(gameId);
+
+            //const betAmountInEther = ethers.formatEther(game.betAmount);
+            setGameDetails({
+                player1: game.player1,
+                player2: game.player2,
+            });
+
+            const playerAddress = await signer.getAddress();
+            if(winner === "Player 1 wins!") {
+                if(playerAddress === game.player1) {
+                    console.log("you won");
+                    setIsWinner(true);
+                } else {
+                    console.log("you lost");
+                }
+            } else if(winner === "Player 2 wins!") {
+                if(playerAddress === game.player2) {
+                    console.log("you won");
+                    setIsWinner(true);
+                } else {
+                    console.log("you lost");
+                }
+            }
+        };
+
+        fetchGameDetails();
+    }, [gameId, contractInstance, signer, winner]);
+
+    const handleWithdraw = async () => {
+        try {
+
+        } catch (error) {
+            console.error("An error occurred while trying to withdraw:", error);
+        }
+    };
+
     return (
+
         <div className="game-result-container">
+            { loading ? ( 
+            <p>Loading game details...</p>
+            ) : (
+                <>
             <div className="players">
                 <div className="player">
                     <h2>Player 1</h2>
-                    <p>{"player1Address.slice(0, 6)}...{player1Address.slice(-4)"}</p>
+                    <p>{gameDetails ? gameDetails.player1 : "fetching"}</p>
                 </div>
                 <div className="player">
                     <h2>Player 2</h2>
-                    <p>{"player2Address.slice(0, 6)}...{player2Address.slice(-4)"}</p>
+                    <p>{gameDetails ? gameDetails.player2 : "fetching"}</p>
                 </div>
             </div>
             
-            <CoinFlip />
+            <CoinFlip winner={ winner } />
 
-            <div className="announcement">
-                <h2>Winner: {isPlayer1Winner ? "Player 1" : "Player 2"}</h2>
-            </div>
-
-            {winnerAddress === "/* Your user's address */" && (
-                <button onClick={onCollect}>Collect Winnings</button>
-            )}
+            {isWinner && (
+                <button className="withdraw-button" onClick={handleWithdraw}>Withdraw</button>
+            )}</>) }
         </div>
     );
 }
