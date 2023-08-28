@@ -54,17 +54,11 @@ function GameResult() {
             const playerAddress = await signer.getAddress();
             if(winner === "Player 1 wins!") {
                 if(playerAddress === game.player1) {
-                    console.log("you won");
                     setIsWinner(true);
-                } else {
-                    console.log("you lost");
                 }
             } else if(winner === "Player 2 wins!") {
                 if(playerAddress === game.player2) {
-                    console.log("you won");
                     setIsWinner(true);
-                } else {
-                    console.log("you lost");
                 }
             }
         };
