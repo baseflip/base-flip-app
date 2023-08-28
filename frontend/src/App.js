@@ -11,11 +11,12 @@ import './App.css';
 function App() {
   const [account, setAccount] = useState(null);
   const [signer, setSigner] = useState(null);
+  const [error, setError] = useState(null);
 
   return (
     <Router>
       <div className="App">
-        <EthereumContext.Provider value={{ account, setAccount, signer, setSigner }}>
+        <EthereumContext.Provider value={{ account, setAccount, signer, setSigner, error, setError }}>
           <Header />
           <Frame>
             <Routes>

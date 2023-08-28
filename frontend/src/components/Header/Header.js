@@ -4,10 +4,10 @@ import EthereumContext from '../../EthereumContext';
 import { useWalletConnection } from '../../hooks/useWalletConnection';
 
 function Header() {
-  const { account, setAccount, setSigner } = useContext(EthereumContext);
+  const { account, error, setAccount, setSigner } = useContext(EthereumContext);
 
   // Pass the setAccount and setSigner functions to custom wallet connect hook
-  const { connectWallet, disconnectWallet, error } = useWalletConnection(setAccount, setSigner);
+  const { connectWallet, disconnectWallet } = useWalletConnection(setAccount, setSigner);
 
   // Function to shorten the displayed address
   const shortenAddress = (address) => {

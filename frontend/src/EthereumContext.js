@@ -5,6 +5,8 @@ const EthereumContext = createContext({
   setAccount: () => {},
   signer: null,
   setSigner: () => {},
+  error: null,
+  setError: () => {},
 });
 
 export default EthereumContext;

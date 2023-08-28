@@ -1,32 +1,50 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { BrowserProvider } from 'ethers';
+import { useContext } from 'react';
+import EthereumContext from '../EthereumContext';
 
 const BASE_GOERLI_CHAIN_ID = '0x14a33';
 
 export const useWalletConnection = (setAccount, setSigner) => {
-  const [error, setError] = useState(null);
+  const { setError } = useContext(EthereumContext);
+
+  const checkChainId = useCallback(async () => {
+    const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+    if (chainId !== BASE_GOERLI_CHAIN_ID) {
+      setError('Please connect to the Base Goerli testnet in your wallet.');
+      return false;
+    } else {
+      setError(null);
+      return true;
+    }
+  }, [setError]);
 
   useEffect(() => {
     const connectWalletFromLocalStorage = async () => {
-      const connectedAddress = localStorage.getItem('connectedAddress');
-      if (connectedAddress) {
-        setAccount(connectedAddress);
-        const browserProvider = new BrowserProvider(window.ethereum);
-        const signerInstance = browserProvider.getSigner(0);
-        const resolvedSigner = await signerInstance;
-        setSigner(resolvedSigner);
+      try {
+        const connectedAddress = localStorage.getItem('connectedAddress');
+        if (connectedAddress) {
+          setAccount(connectedAddress);
+          const browserProvider = new BrowserProvider(window.ethereum);
+          const signerInstance = browserProvider.getSigner(0);
+          const resolvedSigner = await signerInstance;
+          setSigner(resolvedSigner);
+    
+          if (await checkChainId() === false) {
+            return;
+          }
+        }
+      } catch (error) {
+        console.error("Error connecting wallet from local storage:", error);
+        setError('Failed to connect wallet from local storage. Please try again.');
       }
     };
 
     connectWalletFromLocalStorage();
 
     if (typeof window.ethereum !== 'undefined') {
-      window.ethereum.on('chainChanged', async (chainId) => {
-        if (chainId !== BASE_GOERLI_CHAIN_ID) {
-          setError('Please connect to the Base Goerli testnet in your wallet.');
-        } else {
-          setError(null);
-        }
+      window.ethereum.on('chainChanged', async () => {
+        await checkChainId();
       });
 
       window.ethereum.on('accountsChanged', (accounts) => {
@@ -47,7 +65,7 @@ export const useWalletConnection = (setAccount, setSigner) => {
         window.ethereum.removeAllListeners('accountsChanged');
       }
     };
-  }, [setAccount, setSigner]);
+  }, [setAccount, setSigner, checkChainId, setError]);
 
   const connectWallet = async () => {
     try {
@@ -62,9 +80,7 @@ export const useWalletConnection = (setAccount, setSigner) => {
         const resolvedSigner = await signerInstance;
         setSigner(resolvedSigner);
 
-        const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-        if (chainId !== BASE_GOERLI_CHAIN_ID) {
-          setError('Please connect to the Base Goerli testnet in your wallet.');
+        if (await checkChainId() === false) {
           return;
         }
       } else {
@@ -82,5 +98,5 @@ export const useWalletConnection = (setAccount, setSigner) => {
     window.location.reload();
   };
 
-  return { connectWallet, disconnectWallet, error };
+  return { connectWallet, disconnectWallet };
 };
