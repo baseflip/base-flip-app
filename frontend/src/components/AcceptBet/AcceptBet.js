@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useMemo, useContext } from 'react';
+import React, { useState, useEffect, useMemo, useContext, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ethers, WebSocketProvider, Contract } from 'ethers';
 import abiData from '../../abi.json';
 import EthereumContext from '../../EthereumContext';
 import { useWalletConnection } from '../../hooks/useWalletConnection';
+import './AcceptBet.css';
 
 const CONTRACT_ADDRESS = "0x70751cF31d8f31d6622760D243F5E4e150efb20b";
 
@@ -13,8 +14,11 @@ function AcceptBet() {
   const [gameDetails, setGameDetails] = useState(null);
   const [betExpired, setBetExpired] = useState(false);
   const { gameId } = useParams();
+  const [withdrawalStatus, setWithdrawalStatus] = useState(null);
   const [withdrawn, setWithdrawn] = useState(false);
   const [generatedLink, setGeneratedLink] = useState('');
+  const [showCopyPopup, setShowCopyPopup] = useState(false);
+  const linkInputRef = useRef(null);
   const navigate = useNavigate();
 
   // Create a provider instance to connect to a custom Ethereum node
@@ -105,65 +109,90 @@ function AcceptBet() {
 
   const handleWithdraw = async () => {
     try {
+      setWithdrawalStatus('Processing withdrawal, you will be asked to sign 2 transactions.');
+      
       const tx1 = await contractInstanceSigner.checkGameTimeout(gameId);
       await tx1.wait();  // Wait for the transaction to be confirmed
-
+  
       // Then proceed with the withdrawal
       const tx2 = await contractInstanceSigner.withdraw();
       await tx2.wait();
+      
+      setWithdrawalStatus('Successfully withdrawn');
       setWithdrawn(true);
     } catch (error) {
       console.error("Error withdrawing:", error);
+      setWithdrawalStatus('Failed to withdraw');
     }
   };
 
+  const handleCopyLink = () => {
+    // Copy the link to clipboard
+    const linkInput = linkInputRef.current;
+    linkInput.select();
+    document.execCommand('copy');
+  
+    // Show the "Link copied!" popup
+    setShowCopyPopup(true);
+  
+    // Hide the popup after 2 seconds
+    setTimeout(() => {
+      setShowCopyPopup(false);
+    }, 1000);
+  };
+
   return (
-    <div>
+    <div className="acceptbet-container">
       {gameDetails && gameId ? (
         <>
-          <h2>Game Details</h2>
-          <p>Bet Amount: {gameDetails.betAmount} ETH</p>
-          <p>Player 1 Address: {gameDetails.player1}</p>
+          <h2 className="acceptbet-heading">Game #{gameId}</h2>
+          <p className="acceptbet-amount">Bet Amount: {gameDetails.betAmount} ETH</p>
+          <p className="acceptbet-info">Player 1 Address: {gameDetails.player1}</p>
   
           {gameDetails.player1.toLowerCase() === account ? (
             <>
-            <h2>Share the room link with someone</h2>
-            
-            <div className="link-section">
-              <input type="text" readOnly value={generatedLink} />
-            </div>
-  
-            <div className="bet-output-section">
+              <div className="link-section">
+                <button className="link-copy" onClick={handleCopyLink}>Copy</button>
+                {showCopyPopup && (
+                  <div className="copy-popup">
+                    Copied!
+                  </div>
+                )}
+                <input type="text" readOnly value={generatedLink} className="acceptbet-info" ref={linkInputRef}/>
+              </div>
+
               <div className="withdraw-section">
                 <button
                   onClick={handleWithdraw}
                   disabled={!betExpired || withdrawn}
-                  style={{
-                    backgroundColor: betExpired && !withdrawn ? '#4CAF50' : 'gray'
-                  }}
+                  className={betExpired && !withdrawn ? "withdrawbet-button" : "withdrawbet-button-disabled"}
                 >
-                  Request Withdraw
+                  Withdraw
                 </button>
-                {!withdrawn && (
+                {!withdrawn && !betExpired && (
                   <div className="tooltip-withdraw">
                     You can withdraw only once the bet has expired without the other user accepting, which takes 15 minutes.
                   </div>
                 )}
+                {withdrawalStatus && (
+                  <div className="withdrawal-status">
+                    {withdrawalStatus}
+                  </div>
+                )}
               </div>
-            </div>
-          </>
+            </>
           ) : (betExpired ? (
-            <p>The bet has expired.</p>
+            <p className="acceptbet-info">The bet has expired.</p>
           ) : account ? (
-            <button onClick={handleJoinGame}>Accept</button>
+            <button onClick={handleJoinGame} className="acceptbet-button">Accept</button>
           ) : (
-            <button className="placeholder-button" onClick={connectWallet}>
+            <button className="connect-wallet-button" onClick={connectWallet}>
               Connect Wallet
             </button>
           ))}
         </>
       ) : (
-        <p>Loading game details...</p>
+        <p className="acceptbet-info">Loading game details...</p>
       )}
     </div>
   );

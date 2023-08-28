@@ -48,14 +48,16 @@ function Bet() {
             </div>
           </div>
           <div className="bet-input-section">
-            <label>Enter desired amount of ETH to bet:</label>
-            <input 
-              type="number" 
-              value={betAmount} 
-              onChange={(e) => setBetAmount(e.target.value)} 
-              placeholder="Bet amount" 
-            />
-            <button onClick={handleDeposit}>Deposit</button>
+            <p>Enter desired amount of ETH to bet on a coinflip:</p>
+            <div className="bet-input-field">
+              <button onClick={handleDeposit}>Deposit</button>
+              <input 
+                type="number" 
+                value={betAmount} 
+                onChange={(e) => setBetAmount(e.target.value)} 
+                placeholder="Bet amount" 
+              />
+            </div>
           </div>
           {transactionStatus === 'pending' && <p>Awaiting transaction confirmation...</p>}
     </div>
