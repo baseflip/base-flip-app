@@ -30,10 +30,10 @@ function Header() {
         <h1><span className="base">BASE</span><span className="flip">flip</span></h1>
       </div>
       <div className="button-section">
-        {error && <p style={{ color: 'red' }}>{error}</p>}
+        {error && <p className="connected-wallet-error">{error}</p>}
         {account ? (
           <>
-            <p>Connected: {shortenAddress(account)}</p>
+            <p className="connected-wallet">Connected: {shortenAddress(account)}</p>
             <button className="placeholder-button" onClick={disconnectWallet}>
               Disconnect Wallet
             </button>

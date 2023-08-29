@@ -20,20 +20,6 @@
     align-items: center;
 }
 
-/* Adjustments for smaller screens */
-@media (max-width: 1400px) {
-    .player {
-        width: 15vw;
-    }
-}
-
-/* Adjustments for smaller screens */
-@media (max-width: 768px) {
-    .player {
-        width: 25vw;
-    }
-}
-
 .winner {
     color: rgb(33, 184, 33);
 }
@@ -46,11 +32,12 @@
     margin: 20px;
     padding: 10px 20px;
     font-size: 1rem;
-    background-color: #007BFF;
+    background: linear-gradient(90deg, #007BFF, #2e8ef4);
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    transition: all 0.3s ease;
 }
 
 .withdraw-button:disabled {
@@ -58,10 +45,25 @@
 }
 
 .withdraw-button:hover {
-    background-color: #2e8ef4;
+    background: linear-gradient(90deg, #2e8ef4, #007BFF);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
 .withdraw-button:disabled:hover {
     background-color: #97a0af;
     cursor: default;
+}
+
+/* Adjustments for smaller screens */
+@media (max-width: 1400px) {
+    .player {
+        width: 15vw;
+    }
+}
+
+/* Adjustments for smaller screens */
+@media (max-width: 768px) {
+    .player {
+        width: 25vw;
+    }
 }

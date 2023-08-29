@@ -114,3 +114,7 @@ button:hover {
   display: block;
 }
 
+.awaiting-status {
+  font-size: 0.9rem;
+  color: #333;
+}

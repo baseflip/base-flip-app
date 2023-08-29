@@ -148,6 +148,7 @@ function AcceptBet() {
           <h2 className="acceptbet-heading">Game #{gameId}</h2>
           <p className="acceptbet-amount">Bet Amount: {gameDetails.betAmount} ETH</p>
           <p className="acceptbet-info">Player 1 Address: {gameDetails.player1}</p>
+          <div className="divider"></div>
   
           {gameDetails.player1.toLowerCase() === account ? (
             <>

@@ -66,7 +66,7 @@ function Bet() {
               />
             </div>
           </div>
-          {transactionStatus === 'pending' && <p>Awaiting transaction confirmation...</p>}
+          {transactionStatus === 'pending' && <p className="awaiting-status">Awaiting transaction confirmation...</p>}
     </div>
   );
 }
