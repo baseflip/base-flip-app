@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Contract } from 'ethers';
 import { parseEther } from 'ethers/utils';
@@ -13,7 +13,14 @@ function Bet() {
   const [transactionStatus, setTransactionStatus] = useState('');
   const { signer } = useContext(EthereumContext);
   const navigate = useNavigate();
-  const contractInstance = new Contract(CONTRACT_ADDRESS, abiData.abi, signer);
+  const [contractInstance, setContractInstance] = useState(null);
+
+  useEffect(() => {
+    if (signer) {
+      const newContractInstance = new Contract(CONTRACT_ADDRESS, abiData.abi, signer);
+      setContractInstance(newContractInstance);
+    }
+  }, [signer]);
   
   const handleDeposit = async () => {
     try {

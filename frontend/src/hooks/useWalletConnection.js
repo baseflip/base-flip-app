@@ -47,6 +47,7 @@ export const useWalletConnection = (setAccount, setSigner) => {
       });
 
       window.ethereum.on('accountsChanged', (accounts) => {
+        console.log("accounts changed");
         if (accounts.length === 0) {
           setError('Please connect to MetaMask.');
           setAccount(null);
