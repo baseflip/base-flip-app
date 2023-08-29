@@ -41,7 +41,7 @@ function Bet() {
   return (
     <div className="bet-container">
           <div className="heading-section">
-            <h2>Create a new bet and share it</h2>
+            <h2>Create a new room and share it</h2>
             <div className="info-icon">
               ⓘ
               <div className="tooltip">Enter the desired bet size in the field below and click on deposit. After you've deposited your ETH, a link will be generated which you can share with your counterparty.</div>
@@ -50,7 +50,7 @@ function Bet() {
           <div className="bet-input-section">
             <p>Enter desired amount of ETH to bet on a coinflip:</p>
             <div className="bet-input-field">
-              <button onClick={handleDeposit}>Deposit</button>
+              <button className="bet-button" onClick={handleDeposit}>Deposit</button>
               <input 
                 type="number" 
                 value={betAmount} 

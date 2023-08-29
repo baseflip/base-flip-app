@@ -27,7 +27,7 @@ function Header() {
       <div className="logo-section" onClick={goToHomePage}>
         {/* Placeholder */}
         <div className="placeholder-logo"></div>
-        <h1>BaseFlip</h1>
+        <h1><span className="base">BASE</span><span className="flip">flip</span></h1>
       </div>
       <div className="button-section">
         {error && <p style={{ color: 'red' }}>{error}</p>}

@@ -11,7 +11,7 @@ export const useWalletConnection = (setAccount, setSigner) => {
   const checkChainId = useCallback(async () => {
     const chainId = await window.ethereum.request({ method: 'eth_chainId' });
     if (chainId !== BASE_GOERLI_CHAIN_ID) {
-      setError('Please connect to the Base Goerli testnet in your wallet.');
+      setError('Switch to Base network.');
       return false;
     } else {
       setError(null);
@@ -36,7 +36,6 @@ export const useWalletConnection = (setAccount, setSigner) => {
         }
       } catch (error) {
         console.error("Error connecting wallet from local storage:", error);
-        setError('Failed to connect wallet from local storage. Please try again.');
       }
     };
 

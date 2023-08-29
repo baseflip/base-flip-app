@@ -46,7 +46,7 @@
     margin: 20px;
     padding: 10px 20px;
     font-size: 1rem;
-    background-color: #1d50a9;
+    background-color: #007BFF;
     color: white;
     border: none;
     border-radius: 4px;
@@ -58,7 +58,7 @@
 }
 
 .withdraw-button:hover {
-    background-color: #496db0;
+    background-color: #2e8ef4;
 }
 
 .withdraw-button:disabled:hover {
