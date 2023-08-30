@@ -20,8 +20,8 @@ contract BaseFlip {
     mapping(uint => Game) public games;
     mapping(address => uint) public pendingWithdrawals;
     uint public gameIdCounter;
-    uint public feePercent = 5;
-    uint public timeLimit = 15 minutes;
+    uint public constant feePercent = 5;
+    uint public constant timeLimit = 15 minutes;
     uint public collectedFees;
 
     address public owner;
@@ -41,20 +41,11 @@ contract BaseFlip {
         _;
     }
 
-    /**
-     * @dev Modifier to check the current state of the game.
-     * @param gameId The ID of the game to check.
-     * @param _state The expected state of the game.
-     */
     modifier inState(uint gameId, GameState _state) {
         require(games[gameId].currentState == _state, "Current state does not allow this action");
         _;
     }
 
-    /**
-     * @dev Start a new game with a specified bet amount.
-     * @param _betAmount The amount of ether to bet.
-     */
     function startGame(uint _betAmount) public payable {
         require(msg.value == _betAmount, "Sent ether should be equal to bet amount");
 
@@ -68,10 +59,6 @@ contract BaseFlip {
         gameIdCounter++;
     }
 
-    /**
-     * @dev Join an existing game.
-     * @param gameId The ID of the game to join.
-     */
     function joinGame(uint gameId) public payable inState(gameId, GameState.GameStarted) {
         require(msg.value == games[gameId].betAmount, "Sent ether should be equal to bet amount");
         require(block.timestamp <= games[gameId].startTime + timeLimit, "Time limit for joining the game has passed");
@@ -83,15 +70,11 @@ contract BaseFlip {
         determineWinner(gameId);
     }
 
-    /**
-     * @dev Determine the winner of a game pseudo-randomly.
-     * @param gameId The ID of the game.
-     */
     function determineWinner(uint gameId) private inState(gameId, GameState.GameOver) {
         bytes32 hashed = keccak256(abi.encodePacked(games[gameId].player1, games[gameId].player2, blockhash(block.number - 1)));
         uint randomNumber = uint(hashed) % 2;
         uint winnings = games[gameId].betAmount * 2;
-        uint fee = winnings * feePercent / 1000;
+        uint fee = winnings * feePercent / 100;
 
         winnings = winnings - fee;
         collectedFees += fee;
@@ -109,9 +92,6 @@ contract BaseFlip {
         emit CoinFlipped(gameId, winningPlayer);
     }
 
-    /**
-     * @dev Withdraw winnings.
-     */
     function withdraw() public {
         uint amount = pendingWithdrawals[msg.sender];
         require(amount > 0, "No funds to withdraw");
@@ -122,15 +102,9 @@ contract BaseFlip {
         emit Withdrawal(msg.sender, amount);
     }
 
-    /**
-     * @dev Reset a game.
-     * @param gameId The ID of the game to reset.
-     */
     function resetGame(uint gameId) public inState(gameId, GameState.GameOver) {
-        // Only allow a player of the game to reset it
         require(msg.sender == games[gameId].player1 || msg.sender == games[gameId].player2, "Only a player of the game can reset it");
 
-        // Reset game details
         games[gameId].player1 = payable(address(0));
         games[gameId].player2 = payable(address(0));
         games[gameId].betAmount = 0;
@@ -140,10 +114,6 @@ contract BaseFlip {
         emit GameReset(gameId);
     }
 
-    /**
-     * @dev Check if a game has timed out and refund the first player's bet if it has.
-     * @param gameId The ID of the game to check.
-     */
     function checkGameTimeout(uint gameId) public inState(gameId, GameState.GameStarted) {
         require(block.timestamp > games[gameId].startTime + timeLimit, "Game has not yet timed out");
 
@@ -153,25 +123,6 @@ contract BaseFlip {
         resetGame(gameId);
     }
 
-    /**
-     * @dev Set the fee percent.
-     * @param _feePercent The new fee percent.
-     */
-    function setFeePercent(uint _feePercent) public onlyOwner {
-        feePercent = _feePercent;
-    }
-
-    /**
-     * @dev Set the time limit for joining a game.
-     * @param _timeLimit The new time limit.
-     */
-    function setTimeLimit(uint _timeLimit) public onlyOwner {
-        timeLimit = _timeLimit;
-    }
-
-    /**
-     * @dev Withdraw collected fees.
-     */
     function withdrawFees() public onlyOwner {
         uint fees = collectedFees;
         require(fees > 0, "No fees to withdraw");

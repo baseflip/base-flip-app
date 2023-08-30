@@ -12,11 +12,12 @@ function App() {
   const [account, setAccount] = useState(null);
   const [signer, setSigner] = useState(null);
   const [error, setError] = useState(null);
+  const [contractAddress] = useState("0xf2574b2fBa0eBf42472eD32cC1DbC4e88b2B6061");
 
   return (
     <Router>
       <div className="App">
-        <EthereumContext.Provider value={{ account, setAccount, signer, setSigner, error, setError }}>
+        <EthereumContext.Provider value={{ account, setAccount, signer, setSigner, error, setError, contractAddress }}>
           <Header />
           <Frame>
             <Routes>

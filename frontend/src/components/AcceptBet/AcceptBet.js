@@ -6,9 +6,8 @@ import EthereumContext from '../../EthereumContext';
 import { useWalletConnection } from '../../hooks/useWalletConnection';
 import './AcceptBet.css';
 
-const CONTRACT_ADDRESS = "0x70751cF31d8f31d6622760D243F5E4e150efb20b";
-
 function AcceptBet() {
+  const { contractAddress } = useContext(EthereumContext);
   const { account, signer, setAccount, setSigner } = useContext(EthereumContext);
   const [contractInstanceSigner, setContractInstanceSigner] = useState(null);
   const { connectWallet } = useWalletConnection(setAccount, setSigner);
@@ -29,15 +28,15 @@ function AcceptBet() {
   }, []);
   
   const contractInstanceProvider = useMemo(() => {
-    return new Contract(CONTRACT_ADDRESS, abiData.abi, provider);
-  }, [provider]);
+    return new Contract(contractAddress, abiData.abi, provider);
+  }, [provider, contractAddress]);
 
   useEffect(() => {
     if (signer) {
-      const newContractInstance = new Contract(CONTRACT_ADDRESS, abiData.abi, signer);
+      const newContractInstance = new Contract(contractAddress, abiData.abi, signer);
       setContractInstanceSigner(newContractInstance);
     }
-  }, [signer]);
+  }, [signer, contractAddress]);
 
   useEffect(() => {
     // Listen to the "CoinFlipped" event

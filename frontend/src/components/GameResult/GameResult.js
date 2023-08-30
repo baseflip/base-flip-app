@@ -6,9 +6,8 @@ import CoinFlip from '../CoinFlip/CoinFlip';
 import EthereumContext from '../../EthereumContext';
 import './GameResult.css';
 
-const CONTRACT_ADDRESS = "0x70751cF31d8f31d6622760D243F5E4e150efb20b";
-
 function GameResult() {
+    const { contractAddress } = useContext(EthereumContext);
     const [isWinner, setIsWinner] = useState(false);
     const location = useLocation();
     const [gameDetails, setGameDetails] = useState(null);
@@ -27,12 +26,12 @@ function GameResult() {
     }, []);
     
     const contractInstance = useMemo(() => {
-        return new Contract(CONTRACT_ADDRESS, abiData.abi, provider);
-    }, [provider]);
+        return new Contract(contractAddress, abiData.abi, provider);
+    }, [provider, contractAddress]);
 
     const contractInstanceSigner = useMemo(() => {
-        return new Contract(CONTRACT_ADDRESS, abiData.abi, signer);
-    }, [signer]);
+        return new Contract(contractAddress, abiData.abi, signer);
+    }, [signer, contractAddress]);
 
     const generateSpacedPositions = (count, minDistance = 30) => {
         const positions = [];

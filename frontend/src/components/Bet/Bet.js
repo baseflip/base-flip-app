@@ -6,9 +6,8 @@ import abiData from '../../abi.json';
 import EthereumContext from '../../EthereumContext';
 import './Bet.css';
 
-const CONTRACT_ADDRESS = "0x70751cF31d8f31d6622760D243F5E4e150efb20b";
-
 function Bet() {
+  const { contractAddress } = useContext(EthereumContext);
   const [betAmount, setBetAmount] = useState('');
   const [transactionStatus, setTransactionStatus] = useState('');
   const { signer } = useContext(EthereumContext);
@@ -17,10 +16,10 @@ function Bet() {
 
   useEffect(() => {
     if (signer) {
-      const newContractInstance = new Contract(CONTRACT_ADDRESS, abiData.abi, signer);
+      const newContractInstance = new Contract(contractAddress, abiData.abi, signer);
       setContractInstance(newContractInstance);
     }
-  }, [signer]);
+  }, [signer, contractAddress]);
   
   const handleDeposit = async () => {
     try {
