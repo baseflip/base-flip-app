@@ -1,11 +1,5 @@
 {
   "dependencies": {
-    "dotenv": "^16.3.1",
-    "gh-pages": "^6.0.0"
-  },
-  "scripts": {
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
-  },
-  "homepage": "https://baseflip.github.io/base-flip-app"
+    "dotenv": "^16.3.1"
+  }
 }
