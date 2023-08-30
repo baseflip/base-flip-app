@@ -77,7 +77,7 @@ function AcceptBet() {
   }, [gameId, contractInstanceProvider]);
 
   useEffect(() => {
-    const link = "http://localhost:3000/room/" + gameId.toString();
+    const link = "http://baseflip.net/room/" + gameId.toString();
     setGeneratedLink(link);
   }, [gameId]);
 
