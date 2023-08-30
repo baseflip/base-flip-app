@@ -50,7 +50,7 @@
 
 .dollar-sign {
     position: absolute;
-    font-size: 2rem;
+    font-size: 1.8rem;
     color: #59c2ff;
     opacity: 0;
     animation: dollarAnimation 1.2s ease-out forwards;

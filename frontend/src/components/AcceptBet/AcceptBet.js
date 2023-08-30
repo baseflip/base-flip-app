@@ -23,7 +23,7 @@ function AcceptBet() {
 
   const provider = useMemo(() => {
     return new WebSocketProvider(
-    `wss://delicate-crimson-dew.base-goerli.discover.quiknode.pro/${process.env.REACT_APP_PROVIDER_API_KEY}`
+    `wss://cool-white-tent.base-mainnet.discover.quiknode.pro/${process.env.REACT_APP_PROVIDER_API_KEY}`
   );
   }, []);
   

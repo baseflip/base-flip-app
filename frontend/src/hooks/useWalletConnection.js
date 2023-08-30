@@ -36,11 +36,9 @@ export const useWalletConnection = (setAccount, setSigner) => {
             return;
           }
         } else if (currentMetaMaskAccount.length > 0 && !disconnected) {
-          // If they are different, use the current MetaMask account
           const newAccount = currentMetaMaskAccount[0];
           setAccount(newAccount);
           localStorage.setItem('connectedAddress', newAccount);
-          // ... (existing code to set signer and other states)
           const browserProvider = new BrowserProvider(window.ethereum);
           const signerInstance = browserProvider.getSigner(0);
           const resolvedSigner = await signerInstance;
@@ -73,7 +71,6 @@ export const useWalletConnection = (setAccount, setSigner) => {
           setAccount(newAccount);
           localStorage.setItem('connectedAddress', newAccount);
       
-          // Update the signer
           const browserProvider = new BrowserProvider(window.ethereum);
           const signerInstance = browserProvider.getSigner(0);
           const resolvedSigner = await signerInstance;
