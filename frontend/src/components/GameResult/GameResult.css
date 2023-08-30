@@ -1,7 +1,7 @@
 .players {
     display: flex;
     justify-content: space-around;
-    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    flex-wrap: wrap;
 }
 
 .player h2 {
@@ -11,6 +11,8 @@
 
 .player {
     background-color: #f4f4f4;
+    font-weight: bold;
+    color: #777;
     padding: 20px;
     border-radius: 10px;
     margin-bottom: 20px;
@@ -18,14 +20,19 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    box-shadow: 0 0 30px 10px rgba(194, 218, 234, 0.2),
+              0 0 50px 20px rgba(194, 218, 234, 0.15),
+              0 0 70px 30px rgba(194, 218, 234, 0.1);
 }
 
 .winner {
-    color: rgb(33, 184, 33);
+    animation: winnerAnimation 3s ease-in-out infinite;
+    font-weight: bold;
+    color: #777;
 }
 
 .loser {
-    color: rgb(197, 31, 51);
+
 }
 
 .withdraw-button {
@@ -38,10 +45,31 @@
     border-radius: 4px;
     cursor: pointer;
     transition: all 0.3s ease;
+    position: relative;
+}
+
+.dollar-sign {
+    position: absolute;
+    font-size: 2rem;
+    color: #59c2ff;
+    opacity: 0;
+    animation: dollarAnimation 1.2s ease-out forwards;
+}
+  
+@keyframes dollarAnimation {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-150px);
+    }
 }
 
 .withdraw-button:disabled {
-    background-color: #97a0af;
+    background-color: #97a0af !important;
+    background: none;
 }
 
 .withdraw-button:hover {
@@ -52,16 +80,34 @@
 .withdraw-button:disabled:hover {
     background-color: #97a0af;
     cursor: default;
+    background: none;
+    box-shadow: none;
 }
 
-/* Adjustments for smaller screens */
+@keyframes winnerAnimation {
+    0% {
+      text-shadow: 0 0 5px #ffd700, 0 0 10px #ffd700;
+    }
+    25% {
+      text-shadow: 0 0 10px #add8e6, 0 0 20px #add8e6, 0 0 30px #add8e6;
+    }
+    50% {
+      text-shadow: 0 0 15px #ffd700, 0 0 30px #ffd700, 0 0 45px #ffd700;
+    }
+    75% {
+      text-shadow: 0 0 20px #add8e6, 0 0 40px #add8e6, 0 0 60px #add8e6;
+    }
+    100% {
+      text-shadow: 0 0 5px #ffd700, 0 0 10px #ffd700;
+    }
+}
+
 @media (max-width: 1400px) {
     .player {
         width: 15vw;
     }
 }
 
-/* Adjustments for smaller screens */
 @media (max-width: 768px) {
     .player {
         width: 25vw;

@@ -10,6 +10,7 @@ const CONTRACT_ADDRESS = "0x70751cF31d8f31d6622760D243F5E4e150efb20b";
 
 function AcceptBet() {
   const { account, signer, setAccount, setSigner } = useContext(EthereumContext);
+  const [contractInstanceSigner, setContractInstanceSigner] = useState(null);
   const { connectWallet } = useWalletConnection(setAccount, setSigner);
   const [gameDetails, setGameDetails] = useState(null);
   const [betExpired, setBetExpired] = useState(false);
@@ -21,27 +22,26 @@ function AcceptBet() {
   const linkInputRef = useRef(null);
   const navigate = useNavigate();
 
-  // Create a provider instance to connect to a custom Ethereum node
   const provider = useMemo(() => {
     return new WebSocketProvider(
-    `wss://delicate-crimson-dew.base-goerli.discover.quiknode.pro/3e739828ff34548682516310c83e2dbbb604b2b8/`
+    `wss://delicate-crimson-dew.base-goerli.discover.quiknode.pro/${process.env.REACT_APP_PROVIDER_API_KEY}`
   );
   }, []);
   
-  // Create a contract instance using the public provider
   const contractInstanceProvider = useMemo(() => {
     return new Contract(CONTRACT_ADDRESS, abiData.abi, provider);
   }, [provider]);
 
-  // Create a contract instance using the signer
-  const contractInstanceSigner = useMemo(() => {
-    return new Contract(CONTRACT_ADDRESS, abiData.abi, signer);
+  useEffect(() => {
+    if (signer) {
+      const newContractInstance = new Contract(CONTRACT_ADDRESS, abiData.abi, signer);
+      setContractInstanceSigner(newContractInstance);
+    }
   }, [signer]);
 
   useEffect(() => {
     // Listen to the "CoinFlipped" event
     const onCoinFlipped = (gameIdEvent, winner) => {
-      console.log("hi from AcceptBet.js");
       // Redirect to the "gameResult" component with the winner information
       if(Number(gameIdEvent) === Number(gameId)) {
         navigate('/game-result/' + gameId, { state: { winner, gameId } });
@@ -72,7 +72,6 @@ function AcceptBet() {
         setBetExpired(true);
         return;
       }
-
     };
 
     fetchGameDetails();
@@ -94,11 +93,9 @@ function AcceptBet() {
       }
     };
   }, []);
-  
 
   const handleJoinGame = async () => {
     try {
-      // Logic to join the game
       const gasLimit = 120000;
       const tx = await contractInstanceSigner.joinGame(gameId, { value: gameDetails.betAmountRaw, gasLimit: gasLimit });
       await tx.wait();
@@ -112,9 +109,8 @@ function AcceptBet() {
       setWithdrawalStatus('Processing withdrawal, you will be asked to sign 2 transactions.');
       
       const tx1 = await contractInstanceSigner.checkGameTimeout(gameId);
-      await tx1.wait();  // Wait for the transaction to be confirmed
+      await tx1.wait();
   
-      // Then proceed with the withdrawal
       const tx2 = await contractInstanceSigner.withdraw();
       await tx2.wait();
       
@@ -127,15 +123,12 @@ function AcceptBet() {
   };
 
   const handleCopyLink = () => {
-    // Copy the link to clipboard
     const linkInput = linkInputRef.current;
     linkInput.select();
     document.execCommand('copy');
   
-    // Show the "Link copied!" popup
     setShowCopyPopup(true);
   
-    // Hide the popup after 2 seconds
     setTimeout(() => {
       setShowCopyPopup(false);
     }, 1000);
@@ -149,7 +142,6 @@ function AcceptBet() {
           <p className="acceptbet-amount">Bet Amount: {gameDetails.betAmount} ETH</p>
           <p className="acceptbet-info">Player 1 Address: {gameDetails.player1}</p>
           <div className="divider"></div>
-  
           {gameDetails.player1.toLowerCase() === account ? (
             <>
               <div className="link-section">

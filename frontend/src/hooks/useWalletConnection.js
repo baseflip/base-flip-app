@@ -3,14 +3,14 @@ import { BrowserProvider } from 'ethers';
 import { useContext } from 'react';
 import EthereumContext from '../EthereumContext';
 
-const BASE_GOERLI_CHAIN_ID = '0x14a33';
+const BASE_CHAIN_ID = '0x2105';
 
 export const useWalletConnection = (setAccount, setSigner) => {
   const { setError } = useContext(EthereumContext);
 
   const checkChainId = useCallback(async () => {
     const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-    if (chainId !== BASE_GOERLI_CHAIN_ID) {
+    if (chainId !== BASE_CHAIN_ID) {
       setError('Switch to Base network.');
       return false;
     } else {
@@ -23,8 +23,24 @@ export const useWalletConnection = (setAccount, setSigner) => {
     const connectWalletFromLocalStorage = async () => {
       try {
         const connectedAddress = localStorage.getItem('connectedAddress');
-        if (connectedAddress) {
+        const currentMetaMaskAccount = await window.ethereum.request({ method: 'eth_accounts' });
+        const disconnected = localStorage.getItem('disconnected');
+        if (connectedAddress && currentMetaMaskAccount[0] === connectedAddress) {
           setAccount(connectedAddress);
+          const browserProvider = new BrowserProvider(window.ethereum);
+          const signerInstance = browserProvider.getSigner(0);
+          const resolvedSigner = await signerInstance;
+          setSigner(resolvedSigner);
+    
+          if (await checkChainId() === false) {
+            return;
+          }
+        } else if (currentMetaMaskAccount.length > 0 && !disconnected) {
+          // If they are different, use the current MetaMask account
+          const newAccount = currentMetaMaskAccount[0];
+          setAccount(newAccount);
+          localStorage.setItem('connectedAddress', newAccount);
+          // ... (existing code to set signer and other states)
           const browserProvider = new BrowserProvider(window.ethereum);
           const signerInstance = browserProvider.getSigner(0);
           const resolvedSigner = await signerInstance;
@@ -46,15 +62,22 @@ export const useWalletConnection = (setAccount, setSigner) => {
         await checkChainId();
       });
 
-      window.ethereum.on('accountsChanged', (accounts) => {
-        console.log("accounts changed");
+      window.ethereum.on('accountsChanged', async (accounts) => {
         if (accounts.length === 0) {
           setError('Please connect to MetaMask.');
           setAccount(null);
+          setSigner(null);
           localStorage.removeItem('connectedAddress');
         } else {
-          setAccount(accounts[0]);
-          localStorage.setItem('connectedAddress', accounts[0]);
+          const newAccount = accounts[0];
+          setAccount(newAccount);
+          localStorage.setItem('connectedAddress', newAccount);
+      
+          // Update the signer
+          const browserProvider = new BrowserProvider(window.ethereum);
+          const signerInstance = browserProvider.getSigner(0);
+          const resolvedSigner = await signerInstance;
+          setSigner(resolvedSigner);
         }
       });
     }
@@ -70,6 +93,7 @@ export const useWalletConnection = (setAccount, setSigner) => {
   const connectWallet = async () => {
     try {
       if (typeof window.ethereum !== 'undefined') {
+        localStorage.removeItem('disconnected');
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         const account = accounts[0];
         setAccount(account);
@@ -93,7 +117,9 @@ export const useWalletConnection = (setAccount, setSigner) => {
 
   const disconnectWallet = () => {
     setAccount(null);
+    setSigner(null);
     setError(null);
+    localStorage.setItem('disconnected', 'true'); 
     localStorage.removeItem('connectedAddress');
     window.location.reload();
   };

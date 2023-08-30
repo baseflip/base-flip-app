@@ -5,7 +5,7 @@ import Frame from './components/Frame/Frame';
 import Bet from './components/Bet/Bet';
 import AcceptBet from './components/AcceptBet/AcceptBet';
 import GameResult from './components/GameResult/GameResult';
-import EthereumContext from './EthereumContext'; // Adjust the path to where you've placed EthereumContext.js
+import EthereumContext from './EthereumContext';
 import './App.css';
 
 function App() {
