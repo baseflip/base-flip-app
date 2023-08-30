@@ -1,14 +1,14 @@
 {
   "files": {
-    "main.css": "/base-flip-app/static/css/main.ea721b03.css",
-    "main.js": "/base-flip-app/static/js/main.79c445f4.js",
-    "static/media/bflogo2.png": "/base-flip-app/static/media/bflogo2.f0633c9f68608dcdafa0.png",
-    "index.html": "/base-flip-app/index.html",
-    "main.ea721b03.css.map": "/base-flip-app/static/css/main.ea721b03.css.map",
-    "main.79c445f4.js.map": "/base-flip-app/static/js/main.79c445f4.js.map"
+    "main.css": "/static/css/main.ea721b03.css",
+    "main.js": "/static/js/main.54719879.js",
+    "static/media/bflogo2.png": "/static/media/bflogo2.f0633c9f68608dcdafa0.png",
+    "index.html": "/index.html",
+    "main.ea721b03.css.map": "/static/css/main.ea721b03.css.map",
+    "main.54719879.js.map": "/static/js/main.54719879.js.map"
   },
   "entrypoints": [
     "static/css/main.ea721b03.css",
-    "static/js/main.79c445f4.js"
+    "static/js/main.54719879.js"
   ]
 }
