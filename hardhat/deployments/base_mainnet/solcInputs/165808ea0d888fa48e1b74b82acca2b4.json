@@ -1,0 +1,35 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/BaseFlip.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.17;\n\n/**\n * @title BaseFlip\n * @dev A coin flip game where two players bet equal amounts of ether.\n * The winner is determined pseudo-randomly, and the winnings, minus a fee, are awarded to the winner.\n */\ncontract BaseFlip {\n    enum GameState { WaitingForPlayer, GameStarted, GameOver }\n\n    struct Game {\n        address payable player1;\n        address payable player2;\n        uint betAmount;\n        uint startTime;\n        GameState currentState;\n    }\n\n    mapping(uint => Game) public games;\n    mapping(address => uint) public pendingWithdrawals;\n    uint public gameIdCounter;\n    uint public constant feePercent = 5;\n    uint public constant timeLimit = 15 minutes;\n    uint public collectedFees;\n\n    address public owner;\n\n    event GameStarted(uint indexed gameId, address player);\n    event PlayerJoined(uint indexed gameId, address player);\n    event CoinFlipped(uint indexed gameId, string winner);\n    event GameReset(uint indexed gameId);\n    event Withdrawal(address indexed user, uint amount);\n\n    constructor() {\n        owner = msg.sender;\n    }\n\n    modifier onlyOwner() {\n        require(msg.sender == owner, \"Caller is not the owner\");\n        _;\n    }\n\n    modifier inState(uint gameId, GameState _state) {\n        require(games[gameId].currentState == _state, \"Current state does not allow this action\");\n        _;\n    }\n\n    function startGame(uint _betAmount) public payable {\n        require(msg.value == _betAmount, \"Sent ether should be equal to bet amount\");\n\n        games[gameIdCounter].player1 = payable(msg.sender);\n        games[gameIdCounter].betAmount = _betAmount;\n        games[gameIdCounter].startTime = block.timestamp;\n        games[gameIdCounter].currentState = GameState.GameStarted;\n\n        emit GameStarted(gameIdCounter, msg.sender);\n        \n        gameIdCounter++;\n    }\n\n    function joinGame(uint gameId) public payable inState(gameId, GameState.GameStarted) {\n        require(msg.value == games[gameId].betAmount, \"Sent ether should be equal to bet amount\");\n        require(block.timestamp <= games[gameId].startTime + timeLimit, \"Time limit for joining the game has passed\");\n\n        games[gameId].player2 = payable(msg.sender);\n        games[gameId].currentState = GameState.GameOver;\n        emit PlayerJoined(gameId, msg.sender);\n\n        determineWinner(gameId);\n    }\n\n    function determineWinner(uint gameId) private inState(gameId, GameState.GameOver) {\n        bytes32 hashed = keccak256(abi.encodePacked(games[gameId].player1, games[gameId].player2, blockhash(block.number - 1)));\n        uint randomNumber = uint(hashed) % 2;\n        uint winnings = games[gameId].betAmount * 2;\n        uint fee = winnings * feePercent / 100;\n\n        winnings = winnings - fee;\n        collectedFees += fee;\n\n        string memory winningPlayer;\n\n        if(randomNumber == 0) {\n            pendingWithdrawals[games[gameId].player1] += winnings;\n            winningPlayer = \"Player 1 wins!\";\n        } else {\n            pendingWithdrawals[games[gameId].player2] += winnings;\n            winningPlayer = \"Player 2 wins!\";\n        }\n\n        emit CoinFlipped(gameId, winningPlayer);\n    }\n\n    function withdraw() public {\n        uint amount = pendingWithdrawals[msg.sender];\n        require(amount > 0, \"No funds to withdraw\");\n\n        pendingWithdrawals[msg.sender] = 0;\n        payable(msg.sender).transfer(amount);\n\n        emit Withdrawal(msg.sender, amount);\n    }\n\n    function resetGame(uint gameId) public inState(gameId, GameState.GameOver) {\n        require(msg.sender == games[gameId].player1 || msg.sender == games[gameId].player2, \"Only a player of the game can reset it\");\n\n        games[gameId].player1 = payable(address(0));\n        games[gameId].player2 = payable(address(0));\n        games[gameId].betAmount = 0;\n        games[gameId].startTime = 0;\n        games[gameId].currentState = GameState.WaitingForPlayer;\n\n        emit GameReset(gameId);\n    }\n\n    function checkGameTimeout(uint gameId) public inState(gameId, GameState.GameStarted) {\n        require(block.timestamp > games[gameId].startTime + timeLimit, \"Game has not yet timed out\");\n\n        pendingWithdrawals[games[gameId].player1] += games[gameId].betAmount;\n        games[gameId].currentState = GameState.GameOver;\n\n        resetGame(gameId);\n    }\n\n    function withdrawFees() public onlyOwner {\n        uint fees = collectedFees;\n        require(fees > 0, \"No fees to withdraw\");\n\n        collectedFees = 0;\n        payable(msg.sender).transfer(fees);\n    }\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}

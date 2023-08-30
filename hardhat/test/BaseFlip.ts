@@ -27,7 +27,7 @@ describe("BaseFlip", function () {
     const game = await BaseFlip.games(0);
     expect(game.player1).to.equal(addr1.address);
     expect(game.betAmount).to.equal(ethers.utils.parseEther("1"));
-    expect(game.currentState).to.equal(1); // GameStarted
+    expect(game.currentState).to.equal(1);
   });
 
   it("Should not allow to start a game with incorrect bet amount", async function () {
@@ -39,7 +39,7 @@ describe("BaseFlip", function () {
     await BaseFlip.connect(addr2).joinGame(0, { value: ethers.utils.parseEther("1") });
     const game = await BaseFlip.games(0);
     expect(game.player2).to.equal(addr2.address);
-    expect(game.currentState).to.equal(2); // GameOver
+    expect(game.currentState).to.equal(2);
   });
 
   it("Should not allow to join a game with incorrect bet amount", async function () {
@@ -66,16 +66,16 @@ describe("BaseFlip", function () {
   });
 
   it("Should not allow to join a game after the time limit", async function () {
-    await BaseFlip.connect(owner).setTimeLimit(1); // Set a very short time limit for testing
+    await BaseFlip.connect(owner).setTimeLimit(1);
     await BaseFlip.connect(addr1).startGame(ethers.utils.parseEther("1"), { value: ethers.utils.parseEther("1") });
-    await new Promise(resolve => setTimeout(resolve, 2000)); // Wait for the time limit to pass
+    await new Promise(resolve => setTimeout(resolve, 2000));
     await expect(BaseFlip.connect(addr2).joinGame(0, { value: ethers.utils.parseEther("1") })).to.be.revertedWith("Time limit for joining the game has passed");
   });
 
   it("Should refund the first player's bet if the game times out", async function () {
-    await BaseFlip.connect(owner).setTimeLimit(1); // Set a very short time limit for testing
+    await BaseFlip.connect(owner).setTimeLimit(1);
     await BaseFlip.connect(addr1).startGame(ethers.utils.parseEther("1"), { value: ethers.utils.parseEther("1") });
-    await new Promise(resolve => setTimeout(resolve, 2000)); // Wait for the time limit to pass
+    await new Promise(resolve => setTimeout(resolve, 2000));
     await BaseFlip.connect(addr1).checkGameTimeout(0);
     expect(await BaseFlip.pendingWithdrawals(addr1.address)).to.equal(ethers.utils.parseEther("1"));
   });
@@ -88,7 +88,7 @@ describe("BaseFlip", function () {
     expect(game.player1).to.equal(ethers.constants.AddressZero);
     expect(game.player2).to.equal(ethers.constants.AddressZero);
     expect(game.betAmount).to.equal(0);
-    expect(game.currentState).to.equal(0); // WaitingForPlayer
+    expect(game.currentState).to.equal(0);
   });
 
   it("Should not allow non-player to reset a game", async function () {
