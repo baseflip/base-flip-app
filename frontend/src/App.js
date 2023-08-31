@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from './components/Header/Header';
 import Frame from './components/Frame/Frame';
 import Bet from './components/Bet/Bet';
@@ -7,6 +8,20 @@ import AcceptBet from './components/AcceptBet/AcceptBet';
 import GameResult from './components/GameResult/GameResult';
 import EthereumContext from './EthereumContext';
 import './App.css';
+
+const RedirectHandler = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const queryString = new URLSearchParams(window.location.search);
+    const path = queryString.get('p');
+    if (path) {
+      navigate(path);
+    }
+  }, [navigate]);
+
+  return null;
+};
 
 function App() {
   const [account, setAccount] = useState(null);
@@ -16,6 +31,7 @@ function App() {
 
   return (
     <Router>
+      <RedirectHandler />
       <div className="App">
         <EthereumContext.Provider value={{ account, setAccount, signer, setSigner, error, setError, contractAddress }}>
           <Header />

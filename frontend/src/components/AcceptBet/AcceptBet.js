@@ -63,6 +63,7 @@ function AcceptBet() {
       setGameDetails({
         player1: game.player1,
         betAmount: betAmountInEther,
+        currentState: game.currentState,
         betAmountRaw: game.betAmount
       });
 
@@ -77,7 +78,7 @@ function AcceptBet() {
   }, [gameId, contractInstanceProvider]);
 
   useEffect(() => {
-    const link = "http://baseflip.net/room/" + gameId.toString();
+    const link = "https://baseflip.net/room/" + gameId.toString();
     setGeneratedLink(link);
   }, [gameId]);
 
@@ -173,8 +174,8 @@ function AcceptBet() {
                 )}
               </div>
             </>
-          ) : (betExpired ? (
-            <p className="acceptbet-info">The bet has expired.</p>
+          ) : (betExpired || Number(gameDetails.currentState) !== 1 ? (
+            <p className="acceptbet-info">This game has concluded or expired.</p>
           ) : account ? (
             <button onClick={handleJoinGame} className="acceptbet-button">Accept</button>
           ) : (
