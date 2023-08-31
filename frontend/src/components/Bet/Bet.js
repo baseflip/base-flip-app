@@ -54,7 +54,7 @@ function Bet() {
             </div>
           </div>
           <div className="bet-input-section">
-            <p>Enter desired amount of ETH to bet on a coinflip:</p>
+            <p>Enter amount of ETH you want to bet on a coinflip:</p>
             <div className="bet-input-field">
               <button className="bet-button" onClick={handleDeposit}>Deposit</button>
               <input 
