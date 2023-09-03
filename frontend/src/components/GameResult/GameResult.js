@@ -18,6 +18,7 @@ function GameResult() {
     const [showResults, setShowResults] = useState(false);
     const [explode, setExplode] = useState(false);
     const [dollarPositions, setDollarPositions] = useState([]);
+    const [transactionPending, setTransactionPending] = useState(false);
 
     const provider = useMemo(() => {
         return new WebSocketProvider(
@@ -100,6 +101,7 @@ function GameResult() {
     const handleWithdraw = async () => {
         try {
             setExplode(true);
+            setTransactionPending(true);
 
             // Generate spaced out positions for dollar signs
             const positions = generateSpacedPositions(5);
@@ -111,8 +113,10 @@ function GameResult() {
             const tx = await contractInstanceSigner.withdraw();
             await tx.wait();
             setWithdrawn(true);
+            setTransactionPending(false);
         } catch (error) {
             console.error("An error occurred while trying to withdraw:", error);
+            setTransactionPending(false);
         }
     };
 
@@ -124,35 +128,40 @@ function GameResult() {
     return (
 
         <div className="game-result-container">
-            { loading ? ( 
-            <p>Loading game details...</p>
+            {loading ? ( 
+                <p>Loading game details...</p>
             ) : (
                 <>
-            <div className="players">
-                <div className={"player player-1" + (showResults ? (winner === "Player 1 wins!" ? " winner" : " loser") : "")} >
-                    <h2>Player 1</h2>
-                    <p>{gameDetails ? shortenAddress(gameDetails.player1) : "fetching"}</p>
-                </div>
-                <div className={"player player-2" + (showResults ? (winner === "Player 2 wins!" ? " winner" : " loser") : "")} >
-                    <h2>Player 2</h2>
-                    <p>{gameDetails ? shortenAddress(gameDetails.player2) : "fetching"}</p>
-                </div>
-            </div>
-            
-            <CoinFlip winner={ winner } />
+                    <div className="players">
+                        <div className={"player player-1" + (showResults ? (winner === "Player 1 wins!" ? " winner" : " loser") : "")}>
+                            <h2>Player 1</h2>
+                            <p>{gameDetails ? shortenAddress(gameDetails.player1) : "fetching"}</p>
+                        </div>
+                        <div className={"player player-2" + (showResults ? (winner === "Player 2 wins!" ? " winner" : " loser") : "")}>
+                            <h2>Player 2</h2>
+                            <p>{gameDetails ? shortenAddress(gameDetails.player2) : "fetching"}</p>
+                        </div>
+                    </div>
+                    
+                    <CoinFlip winner={winner} />
 
-            {isWinner && showResults && (
-               <button 
-                className="withdraw-button" 
-                onClick={handleWithdraw} 
-                disabled={withdrawn}
-                >
-                    {withdrawn ? "Withdrawn" : "Withdraw"}
-                    {explode && dollarPositions.map((pos, index) => (
-                        <div key={index} className="dollar-sign" style={pos}>$</div>
-                    ))}
-                </button>
-            )}</>) }
+                    {isWinner && showResults && (
+                        <div className="result-withdraw-section">
+                            <button 
+                                className="withdraw-button" 
+                                onClick={handleWithdraw} 
+                                disabled={withdrawn}
+                            >
+                                {withdrawn ? "Withdrawn" : "Withdraw"}
+                                {explode && dollarPositions.map((pos, index) => (
+                                    <div key={index} className="dollar-sign" style={pos}>$</div>
+                                ))}
+                            </button>
+                            {transactionPending && <p className="withdraw-awaiting-status">Awaiting transaction confirmation...</p>}
+                        </div>
+                    )}
+                </>
+            )}
         </div>
     );
 }
