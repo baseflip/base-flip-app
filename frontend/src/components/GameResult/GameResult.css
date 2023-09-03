@@ -84,6 +84,17 @@
     box-shadow: none;
 }
 
+.result-withdraw-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.withdraw-awaiting-status {
+    font-size: 0.9rem;
+    color: #333;
+}
+
 @keyframes winnerAnimation {
     0% {
       text-shadow: 0 0 5px #ffd700, 0 0 10px #ffd700;
