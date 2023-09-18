@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from './components/Header/Header';
+import Footer from './components/Footer/Footer'; 
 import Frame from './components/Frame/Frame';
 import Bet from './components/Bet/Bet';
 import AcceptBet from './components/AcceptBet/AcceptBet';
@@ -42,6 +43,7 @@ function App() {
               <Route path="/game-result/:gameId" element={<GameResult />} />
             </Routes>
           </Frame>
+          <Footer /> 
         </EthereumContext.Provider>
       </div>
     </Router>

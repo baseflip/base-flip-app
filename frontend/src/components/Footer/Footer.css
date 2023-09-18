@@ -1,0 +1,30 @@
+.footer {
+    display: flex;
+    background: linear-gradient(90deg, #007BFF, #2e8ef4);
+    align-items: center;
+    justify-content: space-between;
+    color: #fff;
+    text-align: center;
+    padding: 10px 0;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+
+.footer p {
+    margin-left: 15px;
+}
+
+.footer a {
+    color: #fff;
+    text-decoration: none;
+    margin: 0 15px;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+  
